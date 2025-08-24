@@ -224,8 +224,8 @@ async function sendMealReminder() {
 }
 
 // For Vercel/Webhook deployment: Set up webhook endpoint
-app.post(WEBHOOK_PATH, async (req, res) => {
-  console.log("Webhook triggered for meal reminder");
+app.all(WEBHOOK_PATH, async (req, res) => {
+  console.log(`Webhook triggered via ${req.method} for meal reminder`);
   // Ensure client is ready before sending message
   if (!client.isReady()) {
     console.log("Client not ready, waiting for login...");
