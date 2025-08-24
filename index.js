@@ -68,7 +68,7 @@ async function getWeatherData() {
  */
 async function getFoodRecommendation(weatherData) {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const prompt = `Berikan rekomendasi makanan yang cocok untuk kekasihmu yang memiliki penyakit GERD (gastroesophageal reflux disease) berdasarkan kondisi cuaca dan waktu saat ini:
     
@@ -107,136 +107,6 @@ async function getFoodRecommendation(weatherData) {
   } catch (error) {
     console.error("Error getting food recommendation:", error.message);
     return "- Nasi uduk dengan ayam suwir\n- Bubur ayam tanpa kuah pedas\n- Roti panggang dengan selai kacang";
-  }
-}
-
-/**
- * Get motivational message
- */
-async function getMotivationalMessage() {
-  try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-
-    const prompt = `Buatkan pesan penyemangat singkat (1-2 kalimat) yang penuh kasih sayang dan perhatian untuk mengingatkan kekasihmu yang memiliki penyakit GERD agar tetap makan teratur dan menjaga pola makan. Gunakan bahasa yang lembut, hangat, dan penuh cinta. Pesan ini akan digunakan sebagai pengingat makan.`;
-
-    const result = await model.generateContent(prompt);
-    return result.response.text();
-  } catch (error) {
-    console.error("Error getting motivational message:", error.message);
-    return "Aku selalu ingin yang terbaik untukmu. Jaga kesehatanmu dengan makan teratur, sayang.";
-  }
-}
-
-/**
- * Generate final dynamic message combining all elements
- */
-async function generateFinalMessage(
-  weatherData,
-  foodRecommendation,
-  motivationalMessage
-) {
-  try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-
-    const prompt = `Gabungkan semua informasi berikut menjadi pesan yang sangat personal dan penuh kasih sayang, seolah-olah dikirim oleh kekasih kepada pasangannya yang memiliki penyakit GERD:
-    
-    Cuaca saat ini: ${
-      weatherData
-        ? `${weatherData.description} dengan suhu ${weatherData.temperature}°C`
-        : "Data cuaca tidak tersedia"
-    }
-    Rekomendasi makanan: ${foodRecommendation}
-    Pesan penyemangat: ${motivationalMessage}
-    
-    Buat pesan yang penuh kasih sayang, perhatian, dan cinta dengan bahasa Indonesia yang lembut dan hangat. Format pesan harus cocok untuk dikirim di Discord. Gunakan emoji secukupnya untuk membuat pesan lebih menarik dan personal.`;
-
-    const result = await model.generateContent(prompt);
-    return result.response.text();
-  } catch (error) {
-    console.error("Error generating final message:", error.message);
-    // Fallback message if Gemini fails - keep it concise
-    let fallbackMessage =
-      `:alarm_clock: **Waktunya Makan, Sayang!** :alarm_clock:\n\n` +
-      `Halo kekasihku! Jangan lupa makan :heart:\n\n` +
-      `Cuaca: ${
-        weatherData
-          ? `${weatherData.description} (${weatherData.temperature}°C)`
-          : "Tidak tersedia"
-      }\n\n` +
-      `**Rekomendasi:**\n${foodRecommendation}\n\n` +
-      `:sparkling_heart: _"${motivationalMessage}"_`;
-
-    // Ensure fallback message is also within limit
-    if (fallbackMessage.length > 2000) {
-      fallbackMessage = fallbackMessage.substring(0, 1997) + "...";
-    }
-
-    return fallbackMessage;
-  }
-}
-
-/**
- * Get motivational message
- */
-async function getMotivationalMessage() {
-  try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-
-    const prompt = `Buatkan pesan penyemangat singkat (1-2 kalimat) yang penuh kasih sayang dan perhatian untuk mengingatkan kekasihmu yang memiliki penyakit GERD agar tetap makan teratur dan menjaga pola makan. Gunakan bahasa yang lembut, hangat, dan penuh cinta. Pesan ini akan digunakan sebagai pengingat makan.`;
-
-    const result = await model.generateContent(prompt);
-    return result.response.text();
-  } catch (error) {
-    console.error("Error getting motivational message:", error.message);
-    return "Aku selalu ingin yang terbaik untukmu. Jaga kesehatanmu dengan makan teratur, sayang.";
-  }
-}
-
-/**
- * Generate final dynamic message combining all elements
- */
-async function generateFinalMessage(
-  weatherData,
-  foodRecommendation,
-  motivationalMessage
-) {
-  try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-
-    const prompt = `Gabungkan semua informasi berikut menjadi pesan yang sangat personal dan penuh kasih sayang, seolah-olah dikirim oleh kekasih kepada pasangannya yang memiliki penyakit GERD:
-    
-    Cuaca saat ini: ${
-      weatherData
-        ? `${weatherData.description} dengan suhu ${weatherData.temperature}°C`
-        : "Data cuaca tidak tersedia"
-    }
-    Rekomendasi makanan: ${foodRecommendation}
-    Pesan penyemangat: ${motivationalMessage}
-    
-    Buat pesan yang penuh kasih sayang, perhatian, dan cinta dengan bahasa Indonesia yang lembut dan hangat. Jangan terlalu bucin atau berlebihan. Format pesan harus cocok untuk dikirim di Discord. Gunakan emoji secukupnya untuk membuat pesan lebih menarik dan personal.`;
-
-    const result = await model.generateContent(prompt);
-    return result.response.text();
-  } catch (error) {
-    console.error("Error generating final message:", error.message);
-    // Fallback message if Gemini fails - keep it concise
-    let fallbackMessage =
-      `:alarm_clock: **Waktunya Makan, Sayang!** :alarm_clock:\n\n` +
-      `Halo kekasihku! Jangan lupa makan :heart:\n\n` +
-      `Cuaca: ${
-        weatherData
-          ? `${weatherData.description} (${weatherData.temperature}°C)`
-          : "Tidak tersedia"
-      }\n\n` +
-      `**Rekomendasi:**\n${foodRecommendation}\n\n` +
-      `:sparkling_heart: _"${motivationalMessage}"_`;
-
-    // Ensure fallback message is also within limit
-    if (fallbackMessage.length > 2000) {
-      fallbackMessage = fallbackMessage.substring(0, 1997) + "...";
-    }
-
-    return fallbackMessage;
   }
 }
 
@@ -286,23 +156,14 @@ async function generateFinalMessage(
     console.error("Error generating final message:", error.message);
     // Fallback message if Gemini fails - keep it concise
     let fallbackMessage =
-      `:alarm_clock: **Waktunya Makan, Sayang!** :alarm_clock:
-
-` +
-      `Halo kekasihku! Jangan lupa makan :heart:
-
-` +
+      `:alarm_clock: **Waktunya Makan, Sayang!** :alarm_clock:\n\n` +
+      `Halo kekasihku! Jangan lupa makan :heart:\n\n` +
       `Cuaca: ${
         weatherData
           ? `${weatherData.description} (${weatherData.temperature}°C)`
           : "Tidak tersedia"
-      }
-
-` +
-      `**Rekomendasi:**
-${foodRecommendation}
-
-` +
+      }\n\n` +
+      `**Rekomendasi:**\n${foodRecommendation}\n\n` +
       `:sparkling_heart: _"${motivationalMessage}"_`;
 
     // Ensure fallback message is also within limit
@@ -362,55 +223,21 @@ async function sendMealReminder() {
   }
 }
 
-// For Railway deployment: Set up webhook endpoint
+// For Vercel/Webhook deployment: Set up webhook endpoint
 app.post(WEBHOOK_PATH, async (req, res) => {
   console.log("Webhook triggered for meal reminder");
-  const result = await sendMealReminder();
-  res.status(200).json(result);
-});
-
-// For local deployment: Schedule meal reminders using cron
-function scheduleReminders() {
-  // Only schedule if REMINDER_TIMES is not empty
-  if (REMINDER_TIMES.length > 0) {
-    try {
-      const cron = require("node-cron");
-      REMINDER_TIMES.forEach((time) => {
-        const [hour, minute] = time.split(":");
-        // Schedule using cron with timezone
-        cron.schedule(`${minute} ${hour} * * *`, sendMealReminder, {
-          timezone: TIMEZONE,
-        });
-        console.log(`Scheduled reminder for ${time} ${TIMEZONE}`);
-      });
-    } catch (error) {
-      console.error("Error scheduling reminders:", error.message);
-      console.log(
-        "To use scheduled reminders, please install node-cron: npm install node-cron"
-      );
-    }
-  } else {
-    console.log(
-      "No reminder times configured. Using webhook-only mode for Railway deployment."
-    );
+  // Ensure client is ready before sending message
+  if (!client.isReady()) {
+    console.log("Client not ready, waiting for login...");
+    await new Promise((resolve) => client.once("ready", resolve));
   }
-}
-
-// Start Express server for webhook (Railway deployment)
-app.listen(WEBHOOK_PORT, () => {
-  console.log(`Webhook server running on port ${WEBHOOK_PORT}`);
-  console.log(`Webhook endpoint: POST /gerd-reminder`);
+  const result = await sendMealReminder();
+  res.status(result.success ? 200 : 500).json(result);
 });
 
 // Discord client events
 client.once("clientReady", () => {
   console.log("GERD Bot is ready!");
-  scheduleReminders();
-
-  // Send a test message to confirm everything is working (only in local mode)
-  if (REMINDER_TIMES.length > 0) {
-    sendMealReminder();
-  }
 });
 
 client.on("error", (error) => {
@@ -419,3 +246,6 @@ client.on("error", (error) => {
 
 // Login to Discord
 client.login(process.env.DISCORD_TOKEN);
+
+// Export the app for Vercel
+module.exports = app;
