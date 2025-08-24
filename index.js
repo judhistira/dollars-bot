@@ -25,7 +25,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // Weather API configuration
 const OPENWEATHER_API_KEY = process.env.OPENWEATHER_API_KEY;
-const LOCATION = process.env.LOCATION || "Stasiun Jatibarang Indramayu";
+const LOCATION = process.env.LOCATION || "Jatibarang, ID";
 
 // Timezone configuration
 const TIMEZONE = process.env.TIMEZONE || "Asia/Jakarta";
@@ -229,7 +229,7 @@ app.post(WEBHOOK_PATH, async (req, res) => {
   // Ensure client is ready before sending message
   if (!client.isReady()) {
     console.log("Client not ready, waiting for login...");
-    await new Promise((resolve) => client.once("ready", resolve));
+    await new Promise((resolve) => client.once("clientReady", resolve));
   }
   const result = await sendMealReminder();
   res.status(result.success ? 200 : 500).json(result);
@@ -249,3 +249,7 @@ client.login(process.env.DISCORD_TOKEN);
 
 // Export the app for Vercel
 module.exports = app;
+
+// Export for local testing
+module.exports.client = client;
+module.exports.sendMealReminder = sendMealReminder;

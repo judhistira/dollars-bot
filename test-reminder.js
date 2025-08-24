@@ -1,47 +1,34 @@
-const dotenv = require("dotenv");
-const axios = require("axios");
+require("dotenv").config();
 
-// Load environment variables
-dotenv.config();
+const { client, sendMealReminder } = require("./index.js");
 
-// Get the Railway app URL or use localhost for local testing
-const APP_URL = process.env.APP_URL || "https://bucin-gerd-bot.vercel.app";
-const WEBHOOK_PATH = process.env.WEBHOOK_PATH || "/gerd-reminder";
+console.log("Starting local test...");
 
-// The full webhook URL
-const WEBHOOK_URL = `${APP_URL}${WEBHOOK_PATH}`;
+client.once("clientReady", async () => {
+  console.log(`Bot is ready as ${client.user.tag}`);
+  console.log("Attempting to send a test reminder...");
 
-async function testReminder() {
   try {
-    console.log(`Sending test request to: ${WEBHOOK_URL}`);
+    const result = await sendMealReminder();
+    console.log("Test finished.");
 
-    // Send POST request to trigger the reminder
-    const response = await axios.post(WEBHOOK_URL, {});
-
-    console.log("Response status:", response.status);
-    console.log("Response data:", response.data);
-
-    if (response.data.success) {
-      console.log("✅ Test reminder sent successfully!");
+    if (result && result.success) {
+      console.log("✅ Success:", result.message);
     } else {
-      console.log("❌ Error sending test reminder:", response.data.error);
+      console.error("❌ Failure:", result ? result.error : "Unknown error");
     }
   } catch (error) {
-    if (error.response) {
-      // Server responded with error status
-      console.log("❌ Server error:", error.response.status);
-      console.log("Error data:", error.response.data);
-    } else if (error.request) {
-      // Request was made but no response received
-      console.log("❌ No response received from server");
-      console.log("Error message:", error.message);
-    } else {
-      // Something else happened
-      console.log("❌ Error:", error.message);
-    }
+    console.error("❌ An unexpected error occurred during the test:", error);
+  } finally {
+    // Close the connection to allow the script to exit
+    console.log("Closing Discord client connection.");
+    client.destroy();
   }
-}
+});
 
-// Run the test
-console.log("Testing GERD bot reminder...");
-testReminder();
+client.on("error", (error) => {
+  console.error("Discord client encountered an error:", error);
+});
+
+// The login is already handled in index.js when it's required
+console.log("Waiting for Discord client to log in...");
