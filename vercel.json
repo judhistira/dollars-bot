@@ -1,10 +1,14 @@
 {
   "version": 2,
+  "functions": {
+    "index.js": {
+      "maxDuration": 10
+    }
+  },
   "builds": [
     {
       "src": "index.js",
-      "use": "@vercel/node",
-      "maxDuration": 10
+      "use": "@vercel/node"
     }
   ],
   "routes": [
