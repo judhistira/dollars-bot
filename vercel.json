@@ -11,19 +11,5 @@
       "src": "/(.*)",
       "dest": "index.js"
     }
-  ],
-  "crons": [
-    {
-      "path": "/gerd-reminder",
-      "schedule": "0 0 * * *"
-    },
-    {
-      "path": "/gerd-reminder",
-      "schedule": "0 5 * * *"
-    },
-    {
-      "path": "/gerd-reminder",
-      "schedule": "0 12 * * *"
-    }
   ]
 }

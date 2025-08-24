@@ -1,105 +1,107 @@
 # GERD Meal Reminder Bot
 
-A Discord bot that reminds GERD patients to eat meals at scheduled times with weather-based food recommendations and motivational messages.
+Bot Discord sederhana yang dirancang untuk menjadi teman pengingat makan bagi penderita GERD. Bot ini memberikan rekomendasi makanan yang aman dan sesuai dengan kondisi cuaca, serta pesan penyemangat yang personal menggunakan AI.
 
-## Features
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fusername%2Freponame) *<-- Ganti `username/reponame` dengan URL repo Anda untuk membuat tombol ini berfungsi!*
 
-1. Scheduled meal reminders (customizable times)
-2. Weather-based food recommendations using OpenWeatherMap
-3. Gemini-powered food suggestions suitable for office workers with GERD
-4. Motivational messages to encourage healthy eating
-5. Dynamic message generation using Google Gemini API
-6. Deployable on Railway's free tier with webhook support
+---
 
-## Setup Instructions
+## ✨ Fitur Utama
 
-### Prerequisites
+- **Pengingat Terjadwal**: Mengirim pengingat makan 3x sehari secara otomatis.
+- **Rekomendasi Cerdas**: Rekomendasi makanan disesuaikan dengan cuaca (panas/dingin) dan waktu (pagi/siang/malam).
+- **Aman untuk GERD**: Semua saran makanan difilter agar tidak pedas, tidak asam, dan tidak berlemak.
+- **Personalisasi AI**: Pesan dibuat seolah-olah dari orang terdekat menggunakan Google Gemini API.
+- **Siap Deploy**: Dioptimalkan untuk deployment mudah dan gratis di Vercel.
 
-1. Node.js (v16 or higher)
-2. Discord Bot Token
-3. Google Gemini API Key
-4. OpenWeatherMap API Key
+## 🚀 Teknologi
 
-### Installation
+- **Runtime**: Node.js
+- **Framework**: Express.js
+- **Library Discord**: Discord.js v14
+- **AI**: Google Gemini API (`gemini-1.5-flash`)
+- **Data Cuaca**: OpenWeatherMap API
+- **Deployment**: Vercel
+- **Penjadwalan**: Cron Job Eksternal (misal: cron-job.org)
 
-1. Clone this repository
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+## 🛠️ Instalasi & Konfigurasi Lokal
 
-3. Create a `.env` file with the following variables:
-   ```env
-   DISCORD_TOKEN=your_discord_token_here
-   GEMINI_API_KEY=your_gemini_api_key_here
-   OPENWEATHER_API_KEY=your_openweather_api_key_here
-   CHANNEL_ID=your_channel_id_here
-   LOCATION=Jakarta
-   TIMEZONE=Asia/Jakaka
-   REMINDER_TIMES=08:00,12:00,18:00
-   ```
+Ikuti langkah-langkah ini untuk menjalankan bot di komputer Anda untuk development.
 
-### Configuration
+1.  **Clone Repositori**
+    ```bash
+    git clone https://github.com/username/nama-repo.git
+    cd nama-repo
+    ```
 
-- `DISCORD_TOKEN`: Your Discord bot token from the Discord Developer Portal
-- `GEMINI_API_KEY`: Your Google Gemini API key from Google AI Studio
-- `OPENWEATHER_API_KEY`: Your OpenWeatherMap API key
-- `CHANNEL_ID`: The ID of the Discord channel where reminders will be sent
-- `LOCATION`: Your city/location for weather data
-- `TIMEZONE`: Timezone for scheduling (e.g., Asia/Jakarta)
-- `REMINDER_TIMES`: Comma-separated list of reminder times in 24-hour format (for local deployment)
-- `WEBHOOK_PATH`: (Optional) Custom webhook path (default: /gerd-reminder)
-- `PORT`: (Optional) Port for webhook server (default: 3000)
+2.  **Install Dependensi**
+    ```bash
+    npm install
+    ```
 
-### Running the Bot Locally
+3.  **Buat File `.env`**
+    Buat file baru bernama `.env` di root proyek dan salin konten dari `.env.example` (jika ada) atau isi dengan variabel berikut:
 
-For local deployment with built-in scheduler:
-```bash
-npm start
-```
+    ```env
+    # Token dari Discord Developer Portal
+    DISCORD_TOKEN="..."
 
-To test the reminder functionality without waiting for scheduled times:
-```bash
-npm run test-reminder
-```
+    # API Key dari Google AI Studio
+    GEMINI_API_KEY="..."
 
-### Deployment on Railway
+    # API Key dari OpenWeatherMap
+    OPENWEATHER_API_KEY="..."
 
-1. Create a new project on [Railway](https://railway.app/)
-2. Connect your GitHub repository or upload the files directly
-3. Add the environment variables in the Railway dashboard
-4. Set the run command to `npm start`
-5. Deploy!
+    # ID Channel Discord tujuan pengingat
+    CHANNEL_ID="..."
 
-For Railway deployment, you'll need to set up an external scheduler (like Cron-job.org) to trigger the webhook:
-- Endpoint: `https://your-app-url.railway.app/gerd-reminder`
-- Method: POST
-- Schedule: Configure based on your desired reminder times
+    # Lokasi untuk data cuaca (opsional)
+    LOCATION="Jatibarang, ID"
+    ```
 
-Note: Railway's free tier has limitations on execution time, but the webhook approach will work within these constraints.
+## 🧪 Menjalankan Tes Lokal
 
-## How It Works
-
-1. The bot fetches current weather data for your location
-2. Uses Google Gemini to generate food recommendations based on weather and GERD dietary needs
-3. Creates motivational messages to encourage healthy eating
-4. Combines all information into a dynamic, engaging message
-5. Sends reminders either:
-   - Automatically at scheduled times (local deployment)
-   - When triggered by webhook (Railway deployment)
-
-## Testing
-
-You can test the bot's reminder functionality without waiting for scheduled times:
+Untuk mengirim satu pesan pengingat secara manual ke channel Discord Anda, jalankan perintah berikut:
 
 ```bash
 npm run test-reminder
 ```
 
-This will send a POST request to your webhook endpoint and trigger the reminder message to be sent to Discord. Make sure your bot is running before running this test.
+Skrip ini akan menjalankan bot, mengirim satu pesan, lalu otomatis berhenti. Ini sangat berguna untuk menguji perubahan pada format pesan atau prompt AI tanpa harus menunggu jadwal cron.
 
-If testing locally, the script will send a request to `http://localhost:3000/gerd-reminder` by default. You can customize this by setting the `APP_URL` environment variable in your `.env` file:
+## ☁️ Deployment ke Vercel
 
-```env
-APP_URL=https://your-app-url.railway.app
-```
+Proyek ini dirancang untuk dideploy dengan mudah ke Vercel.
+
+1.  **Push Kode ke GitHub**: Pastikan semua perubahan terakhir sudah Anda `push` ke repositori GitHub Anda.
+2.  **Impor Proyek di Vercel**: 
+    - Buka dashboard Vercel Anda.
+    - Klik "Add New..." -> "Project".
+    - Pilih repositori bot Anda.
+3.  **Atur Environment Variables**: 
+    - Di halaman konfigurasi proyek Vercel, buka bagian "Environment Variables".
+    - Tambahkan semua variabel yang ada di file `.env` Anda.
+4.  **Deploy**: Klik tombol "Deploy". Vercel akan otomatis menginstal dependensi dan membangun proyek.
+
+Setelah selesai, bot Anda akan aktif dan memiliki endpoint yang siap dipanggil.
+
+## ⚙️ Konfigurasi Penjadwalan (Cron Job Eksternal)
+
+Karena batasan paket gratis Vercel, penjadwalan tidak lagi menggunakan Vercel Cron. Anda harus menggunakan layanan **cron job eksternal** untuk memanggil bot secara berkala.
+
+1.  **Dapatkan URL Webhook**: Setelah deployment berhasil, URL webhook Anda akan terlihat seperti ini:
+    `https://<nama-proyek-anda>.vercel.app/gerd-reminder`
+    Ganti `<nama-proyek-anda>` dengan nama proyek Anda di Vercel.
+
+2.  **Gunakan Layanan Cron Job Eksternal**:
+    - Daftar di layanan gratis seperti [cron-job.org](https://cron-job.org/) atau layanan serupa.
+    - Buat tiga cron job baru untuk jadwal pengingat yang Anda inginkan (misal: pagi, siang, malam).
+    - Untuk setiap cron job, masukkan URL webhook Anda sebagai target yang harus dipanggil.
+    - Atur jadwal sesuai waktu yang Anda inginkan. Ingat untuk menyesuaikan zona waktu jika diperlukan.
+
+    Contoh jadwal (WIB):
+    - **Pagi**: `0 7 * * *`
+    - **Siang**: `0 12 * * *`
+    - **Malam**: `0 19 * * *`
+
+Dengan cara ini, layanan eksternal akan memicu bot Anda untuk mengirim pengingat sesuai jadwal yang telah ditentukan.

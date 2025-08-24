@@ -1,84 +1,60 @@
-# GERD Meal Reminder Bot - Dokumentasi Lengkap
+# GERD Meal Reminder Bot - Dokumentasi Lengkap (External Cron Edition)
 
 ## Deskripsi
-Bot Discord yang mengingatkan penderita GERD untuk makan teratur dengan rekomendasi makanan berdasarkan cuaca dan waktu, menggunakan Google Gemini API dan OpenWeatherMap.
+Bot Discord yang mengingatkan penderita GERD untuk makan teratur dengan rekomendasi makanan berdasarkan cuaca dan waktu. Bot ini menggunakan Google Gemini API, OpenWeatherMap, dan di-deploy di Vercel. Penjadwalan ditangani oleh layanan cron job eksternal.
 
 ## Fitur Utama
-1. Pengingat makan terjadwal (dapat dikustomisasi)
-2. Rekomendasi makanan berdasarkan cuaca dan waktu
-3. Pesan penyemangat untuk makan teratur
-4. Personalisasi pesan menggunakan Google Gemini
-5. Dapat dideploy di Railway free tier
+1. Pengingat makan terjadwal via webhook yang dipanggil cron job eksternal.
+2. Rekomendasi makanan berdasarkan cuaca dan waktu.
+3. Pesan penyemangat untuk makan teratur.
+4. Personalisasi pesan menggunakan Google Gemini.
+5. Dioptimalkan untuk deployment di Vercel.
 
 ## Teknologi yang Digunakan
 - Node.js
 - Discord.js
 - Google Gemini API (gemini-1.5-flash)
 - OpenWeatherMap API
-- Express.js (untuk webhook)
-- node-cron (untuk scheduling lokal)
+- Express.js (untuk endpoint webhook)
+- Layanan Cron Job Eksternal (contoh: cron-job.org)
 
 ## File yang Dibuat
-1. index.js - File utama bot
-2. .env - File konfigurasi
-3. package.json - Dependensi dan script
-4. README.md - Dokumentasi
-5. railway.json - Konfigurasi deployment
-6. .gitignore - File yang diabaikan
-7. test-reminder.js - Script testing
+1. index.js - File utama bot dan serverless function (webhook endpoint).
+2. .env - File konfigurasi environment lokal.
+3. package.json - Dependensi dan script.
+4. README.md - Dokumentasi.
+5. vercel.json - Konfigurasi deployment untuk Vercel.
+6. .gitignore - File yang diabaikan.
+7. test-reminder.js - Script untuk testing lokal.
 
 ## Konfigurasi Environment Variables
 - DISCORD_TOKEN: Token bot Discord
 - GEMINI_API_KEY: API key Google Gemini
 - OPENWEATHER_API_KEY: API key OpenWeatherMap
 - CHANNEL_ID: ID channel Discord tujuan
-- LOCATION: Lokasi untuk data cuaca (default: Stasiun Jatibarang Indramayu)
-- TIMEZONE: Zona waktu (default: Asia/Jakarta)
-- REMINDER_TIMES: Waktu pengingat (format: HH:MM, dipisah koma)
-- PORT: Port untuk webhook (default: 3000)
-- WEBHOOK_PATH: Path webhook (default: /gerd-reminder)
+- LOCATION: Lokasi untuk data cuaca (default: "Jatibarang, ID")
 
 ## Cara Kerja
-1. Bot mengambil data cuaca dari OpenWeatherMap untuk lokasi yang ditentukan
-2. Menggunakan Google Gemini untuk membuat rekomendasi makanan berdasarkan:
-   - Waktu saat ini (sarapan/makan siang/makan malam)
-   - Kondisi cuaca (dingin/panas/normal)
-   - Kebutuhan diet GERD (tidak pedas, tidak asam, tidak berlemak)
-   - Ketersediaan di warung makan setempat
-3. Menghasilkan pesan penyemangat yang personal
-4. Menggabungkan semua informasi menjadi pesan akhir yang menarik
-5. Mengirim pesan ke channel Discord yang ditentukan
+1. Layanan cron job eksternal memanggil endpoint webhook `https://<nama-app-anda>.vercel.app/gerd-reminder` sesuai jadwal yang ditentukan.
+2. Panggilan tersebut memicu serverless function di `index.js`.
+3. Bot mengambil data cuaca dari OpenWeatherMap.
+4. Menggunakan Google Gemini untuk membuat rekomendasi makanan dan pesan penyemangat.
+5. Menggabungkan semua informasi menjadi pesan yang personal dan menarik.
+6. Mengirim pesan ke channel Discord yang ditentukan.
 
 ## Deployment
-### Lokal:
-- Gunakan `npm start` untuk menjalankan dengan scheduler internal
+### Lokal (untuk development):
+- Gunakan `npm run test-reminder` untuk menjalankan tes pengiriman pesan secara manual.
 
-### Railway:
-- Gunakan webhook dengan eksternal scheduler (cron-job.org, dll.)
-- Endpoint: POST /gerd-reminder
-- Health check: GET /health
+### Vercel (untuk produksi):
+- Cukup lakukan `git push` ke repositori yang terhubung dengan Vercel.
+- Vercel akan secara otomatis men-deploy bot.
+- Pastikan semua Environment Variables sudah diatur di dashboard Vercel.
+- Atur layanan cron job eksternal untuk memanggil URL webhook Anda.
 
 ## Testing
-- Gunakan `npm run test-reminder` untuk menguji pengiriman pesan
-
-## Penanganan Error
-- Batas karakter Discord (2000 karakter) sudah ditangani
-- Fallback untuk setiap fungsi AI jika API tidak merespon
-- Penanganan error untuk koneksi jaringan
-
-## Personalisasi
-- Pesan dibuat personal namun tidak berlebihan
-- Menggunakan bahasa Indonesia yang ramah dan santai
-- Emoji digunakan secukupnya untuk menarik perhatian
-
-## Rekomendasi Makanan
-- Disesuaikan dengan waktu (sarapan/makan siang/makan malam)
-- Disesuaikan dengan cuaca (makanan hangat/dingin)
-- Ramah untuk penderita GERD
-- Mudah ditemukan di warung makan/warteg setempat
-- Cocok untuk orang kantoran (mudah dibawa)
+- Gunakan `npm run test-reminder` untuk menguji fungsi pengiriman pesan secara langsung, tanpa perlu menjalankan server. Skrip ini akan login, mengirim satu pesan, lalu keluar.
 
 ## Catatan Penting
-- Railway free tier bersifat serverless, sehingga menggunakan webhook
-- Perlu external scheduler untuk memicu webhook secara terjadwal
-- Model Gemini yang digunakan: gemini-2.5-flash (free plan)
+- Penjadwalan sepenuhnya diatur oleh layanan cron job eksternal.
+- File `vercel.json` tidak lagi berisi konfigurasi `crons`.
