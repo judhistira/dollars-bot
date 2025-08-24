@@ -160,9 +160,14 @@ async function sendMealReminder(client) {
       return { success: false, error: "Channel not found" };
     }
 
-    const timeOfDay = new Date().getHours() < 10
+    // Get the current hour in the specified timezone
+    const now = new Date();
+    const options = { timeZone: process.env.TIMEZONE || 'Asia/Jakarta', hour: '2-digit', hour12: false };
+    const hourInWIB = parseInt(new Intl.DateTimeFormat('en-US', options).format(now));
+
+    const timeOfDay = hourInWIB < 10
         ? "Sarapan/Pagi"
-        : new Date().getHours() < 15
+        : hourInWIB < 15
         ? "Makan Siang"
         : "Makan Malam";
 
@@ -247,4 +252,5 @@ module.exports = app;
 
 // Export for local testing
 module.exports.sendMealReminder = sendMealReminder;
+
 
