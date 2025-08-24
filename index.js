@@ -7,16 +7,7 @@ const express = require("express");
 // Load environment variables
 dotenv.config();
 
-// Initialize Discord client
-const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-  ],
-});
-
-// Initialize Express app for webhook
+// Initialize Express app
 const app = express();
 app.use(express.json());
 
@@ -27,16 +18,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const OPENWEATHER_API_KEY = process.env.OPENWEATHER_API_KEY;
 const LOCATION = process.env.LOCATION || "Jatibarang, ID";
 
-// Timezone configuration
-const TIMEZONE = process.env.TIMEZONE || "Asia/Jakarta";
-
-// Parse reminder times (for local deployment)
-const REMINDER_TIMES = process.env.REMINDER_TIMES
-  ? process.env.REMINDER_TIMES.split(",")
-  : [];
-
-// Webhook configuration (for Railway deployment)
-const WEBHOOK_PORT = process.env.PORT || 3000;
+// Webhook configuration
 const WEBHOOK_PATH = process.env.WEBHOOK_PATH || "/gerd-reminder";
 
 // Health check endpoint
@@ -66,64 +48,60 @@ async function getWeatherData() {
 /**
  * Get food recommendation based on weather
  */
-async function getFoodRecommendation(weatherData) {
+async function getFoodRecommendation(weatherData, timeOfDay) {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `Berikan rekomendasi makanan yang cocok untuk kekasihmu yang memiliki penyakit GERD (gastroesophageal reflux disease) berdasarkan kondisi cuaca dan waktu saat ini:
     
-    Waktu: ${
-      new Date().getHours() < 10
-        ? "Sarapan/Pagi"
-        : new Date().getHours() < 15
-        ? "Makan Siang"
-        : "Makan Malam"
-    }
+    Waktu: ${timeOfDay}
     Cuaca: ${
       weatherData
         ? `${weatherData.description} dengan suhu ${weatherData.temperature}°C dan kelembapan ${weatherData.humidity}%`
         : "Data cuaca tidak tersedia"
     }
     
-    Rekomendasikan 3 makanan yang:
-    1. Mudah diperoleh di warung makan, warteg, atau restoran terjangkau terdekat
-    2. Ramah bagi penderita GERD (tidak pedas, tidak asam, tidak berlemak)
-    3. Sesuai dengan kondisi cuaca dan waktu saat ini:
-       - Jika cuaca dingin, sarankan makanan hangat
-       - Jika cuaca panas, sarankan makanan segar/dingin
-       - Untuk sarapan, sarankan makanan ringan namun bergizi
-       - Untuk makan siang, sarankan makanan mengenyangkan
-       - Untuk makan malam, sarankan makanan ringan dan mudah dicerna
-    4. Cocok untuk orang yang sedang bekerja di kantor (mudah dibawa, tidak terlalu berminyak)
-    5. Gunakan bahasa Indonesia yang ramah, personal, dan menarik
+    Rekomendasikan 3 makanan dengan format **2 menu berbasis nasi dan 1 menu non-nasi yang variatif**. Semua makanan harus:
+    1. Mudah diperoleh di warung makan, warteg, atau restoran terjangkau terdekat.
+    2. Ramah bagi penderita GERD (tidak pedas, tidak asam, tidak berlemak).
+    3. Sesuai dengan kondisi cuaca dan waktu saat ini (hangat jika dingin, segar jika panas).
+    4. Cocok untuk orang yang sedang bekerja di kantor (mudah dibawa, tidak terlalu berminyak).
+    5. Gunakan bahasa Indonesia yang ramah, personal, dan menarik.
     
     Format dalam bentuk daftar berikut (BUAT SINGKAT):
-    - Makanan 1
-    - Makanan 2
-    - Makanan 3`;
+    - Menu Nasi 1
+    - Menu Nasi 2
+    - Menu Non-Nasi 1`;
 
     const result = await model.generateContent(prompt);
     return result.response.text();
   } catch (error) {
     console.error("Error getting food recommendation:", error.message);
-    return "- Nasi uduk dengan ayam suwir\n- Bubur ayam tanpa kuah pedas\n- Roti panggang dengan selai kacang";
+    return "- Nasi tim ayam jamur\n- Nasi sup bening sayuran\n- Kentang rebus dengan telur";
   }
 }
 
 /**
- * Get motivational message
+ * Get motivational message based on time of day
  */
-async function getMotivationalMessage() {
+async function getMotivationalMessage(timeOfDay) {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    const prompt = `Buatkan pesan penyemangat singkat (1-2 kalimat) yang penuh kasih sayang dan perhatian untuk mengingatkan kekasihmu yang memiliki penyakit GERD agar tetap makan teratur dan menjaga pola makan. Gunakan bahasa yang lembut, hangat, dan penuh cinta. Pesan ini akan digunakan sebagai pengingat makan.`;
+    const prompt = `Buatkan pesan penyemangat singkat (1-2 kalimat) yang penuh kasih sayang untuk mengingatkan kekasihmu yang punya GERD agar makan teratur.
+    
+    Konteks Waktu: ${timeOfDay}
+    
+    - Jika waktu adalah 'Sarapan/Pagi' atau 'Makan Siang', berikan semangat untuk aktivitas atau pekerjaannya.
+    - Jika waktu adalah 'Makan Malam', ingatkan dia untuk rileks dan beristirahat setelah makan.
+    
+    Gunakan bahasa yang lembut, hangat, dan penuh cinta.`;
 
     const result = await model.generateContent(prompt);
     return result.response.text();
   } catch (error) {
     console.error("Error getting motivational message:", error.message);
-    return "Jangan lupa makan ya! Pola makan teratur penting untuk menjaga kesehatan lambungmu.";
+    return "Jangan lupa makan ya, sayang! Jaga kesehatan lambungmu, aku peduli sama kamu.";
   }
 }
 
@@ -136,7 +114,7 @@ async function generateFinalMessage(
   motivationalMessage
 ) {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `Gabungkan semua informasi berikut menjadi pesan yang sangat personal dan penuh kasih sayang, seolah-olah dikirim oleh kekasih kepada pasangannya yang memiliki penyakit GERD:
     
@@ -154,7 +132,7 @@ async function generateFinalMessage(
     return result.response.text();
   } catch (error) {
     console.error("Error generating final message:", error.message);
-    // Fallback message if Gemini fails - keep it concise
+    // Fallback message if Gemini fails
     let fallbackMessage =
       `:alarm_clock: **Waktunya Makan, Sayang!** :alarm_clock:\n\n` +
       `Halo kekasihku! Jangan lupa makan :heart:\n\n` +
@@ -164,57 +142,40 @@ async function generateFinalMessage(
           : "Tidak tersedia"
       }\n\n` +
       `**Rekomendasi:**\n${foodRecommendation}\n\n` +
-      `:sparkling_heart: _"${motivationalMessage}"_`;
+      `:sparkling_heart: _\"${motivationalMessage}\"_`;
 
-    // Ensure fallback message is also within limit
-    if (fallbackMessage.length > 2000) {
-      fallbackMessage = fallbackMessage.substring(0, 1997) + "...";
-    }
-
-    return fallbackMessage;
+    return fallbackMessage.substring(0, 2000);
   }
 }
 
 /**
  * Send meal reminder to Discord channel
+ * @param {Client} client The Discord client instance
  */
-async function sendMealReminder() {
+async function sendMealReminder(client) {
   try {
-    // Get channel
     const channel = await client.channels.fetch(process.env.CHANNEL_ID);
-
     if (!channel) {
       console.error("Channel not found");
-      return;
+      return { success: false, error: "Channel not found" };
     }
 
-    // Get weather data
+    const timeOfDay = new Date().getHours() < 10
+        ? "Sarapan/Pagi"
+        : new Date().getHours() < 15
+        ? "Makan Siang"
+        : "Makan Malam";
+
     const weatherData = await getWeatherData();
-
-    // Get food recommendation
-    const foodRecommendation = await getFoodRecommendation(weatherData);
-
-    // Get motivational message
-    const motivationalMessage = await getMotivationalMessage();
-
-    // Generate final message
+    const foodRecommendation = await getFoodRecommendation(weatherData, timeOfDay);
+    const motivationalMessage = await getMotivationalMessage(timeOfDay);
     let finalMessage = await generateFinalMessage(
       weatherData,
       foodRecommendation,
       motivationalMessage
     );
 
-    // Ensure message is within Discord's 2000 character limit
-    if (finalMessage.length > 2000) {
-      console.log(
-        `Message too long (${finalMessage.length} characters). Truncating...`
-      );
-      // Try to truncate at a natural break point
-      finalMessage = finalMessage.substring(0, 1997) + "...";
-    }
-
-    // Send message to channel
-    await channel.send(finalMessage);
+    await channel.send(finalMessage.substring(0, 2000));
     console.log("Meal reminder sent successfully");
     return { success: true, message: "Meal reminder sent successfully" };
   } catch (error) {
@@ -223,33 +184,67 @@ async function sendMealReminder() {
   }
 }
 
-// For Vercel/Webhook deployment: Set up webhook endpoint
+// Helper function for delays
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// Webhook endpoint for Vercel
 app.all(WEBHOOK_PATH, async (req, res) => {
-  console.log(`Webhook triggered via ${req.method} for meal reminder`);
-  // Ensure client is ready before sending message
-  if (!client.isReady()) {
-    console.log("Client not ready, waiting for login...");
-    await new Promise((resolve) => client.once("clientReady", resolve));
+  console.log(`Webhook triggered. Starting GERD Bot lifecycle...`);
+  const MAX_RETRIES = 3;
+  const RETRY_DELAY = 2000; // 2 seconds
+
+  const client = new Client({
+    intents: [
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildMessages,
+      GatewayIntentBits.MessageContent,
+    ],
+  });
+
+  try {
+    // Login and wait for ready
+    await new Promise((resolve, reject) => {
+      client.once("ready", () => {
+        console.log(`Bot is ready as ${client.user.tag}`);
+        resolve();
+      });
+      client.on("error", reject);
+      client.login(process.env.DISCORD_TOKEN).catch(reject);
+    });
+
+    let result;
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+      console.log(`Attempt ${attempt} to send message...`);
+      result = await sendMealReminder(client);
+      if (result.success) {
+        console.log(`Message sent successfully on attempt ${attempt}.`);
+        break; // Exit loop on success
+      }
+      if (attempt < MAX_RETRIES) {
+        console.log(`Attempt ${attempt} failed. Retrying in ${RETRY_DELAY / 1000}s...`);
+        await delay(RETRY_DELAY);
+      } else {
+        console.log(`All ${MAX_RETRIES} attempts failed.`);
+      }
+    }
+
+    res.status(result.success ? 200 : 500).json(result);
+
+  } catch (error) {
+    console.error("An error occurred during the bot lifecycle:", error);
+    res.status(500).json({ success: false, error: error.message });
+  } finally {
+    // Logout and cleanup
+    if (client.isReady()) {
+      console.log("Closing Discord client connection.");
+      client.destroy();
+    }
   }
-  const result = await sendMealReminder();
-  res.status(result.success ? 200 : 500).json(result);
 });
-
-// Discord client events
-client.once("clientReady", () => {
-  console.log("GERD Bot is ready!");
-});
-
-client.on("error", (error) => {
-  console.error("Discord client error:", error);
-});
-
-// Login to Discord
-client.login(process.env.DISCORD_TOKEN);
 
 // Export the app for Vercel
 module.exports = app;
 
 // Export for local testing
-module.exports.client = client;
 module.exports.sendMealReminder = sendMealReminder;
+

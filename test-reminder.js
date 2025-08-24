@@ -1,15 +1,36 @@
 require("dotenv").config();
+const { Client, GatewayIntentBits } = require("discord.js");
+const { sendMealReminder } = require("./index.js");
 
-const { client, sendMealReminder } = require("./index.js");
+async function runTest() {
+  console.log("Starting local test...");
 
-console.log("Starting local test...");
+  // 1. Initialize Discord Client
+  const client = new Client({
+    intents: [
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildMessages,
+      GatewayIntentBits.MessageContent,
+    ],
+  });
 
-client.once("clientReady", async () => {
-  console.log(`Bot is ready as ${client.user.tag}`);
-  console.log("Attempting to send a test reminder...");
+  client.on("error", (error) => {
+    console.error("Discord client encountered an error:", error);
+  });
 
   try {
-    const result = await sendMealReminder();
+    // 2. Login and wait for ready
+    await new Promise((resolve, reject) => {
+      client.once("ready", () => {
+        console.log(`Bot is ready as ${client.user.tag}`);
+        resolve();
+      });
+      client.login(process.env.DISCORD_TOKEN).catch(reject);
+    });
+
+    // 3. Send the message
+    console.log("Attempting to send a test reminder...");
+    const result = await sendMealReminder(client);
     console.log("Test finished.");
 
     if (result && result.success) {
@@ -20,15 +41,12 @@ client.once("clientReady", async () => {
   } catch (error) {
     console.error("❌ An unexpected error occurred during the test:", error);
   } finally {
-    // Close the connection to allow the script to exit
-    console.log("Closing Discord client connection.");
-    client.destroy();
+    // 4. Logout and cleanup
+    if (client.isReady()) {
+      console.log("Closing Discord client connection.");
+      client.destroy();
+    }
   }
-});
+}
 
-client.on("error", (error) => {
-  console.error("Discord client encountered an error:", error);
-});
-
-// The login is already handled in index.js when it's required
-console.log("Waiting for Discord client to log in...");
+runTest();
