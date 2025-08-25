@@ -206,14 +206,14 @@ function splitMessageIntoChunks(message) {
 
 /**
  * Generate final dynamic message combining all elements in a cohesive, poetic narrative
- * Target length: 1500-2000 characters
+ * Target length: 1800-2000 characters
  * This function now generates all content in a single API call to minimize usage
  */
-async function generateFinalMessage(timeInfo, greetingMessage, governmentNews) {
+async function generateFinalMessage(timeInfo, greetingMessage) {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-    const prompt = `Buat pesan dalam bentuk narasi yang mengalir dengan gaya karakter Rangga dari film "Ada Apa Dengan Cinta" - dingin, pendiam, puitis, introspektif, dan filosofis. Panjang pesan harus antara 1500-2000 karakter.
+    const prompt = `Buat pesan dalam bentuk narasi yang mengalir dengan gaya karakter Rangga dari film "Ada Apa Dengan Cinta" - dingin, pendiam, puitis, introspektif, dan filosofis. Panjang pesan antara 1500-1800 karakter.
     
     <instruksi>
     Buat narasi yang padu dan berkesinambungan dengan struktur berikut:
@@ -246,11 +246,6 @@ async function generateFinalMessage(timeInfo, greetingMessage, governmentNews) {
     - Sisipkan secara alami dalam konteks percakapan
     </trivia>
     
-    <berita_pemerintah>
-    - Berita pemerintah: ${governmentNews}
-    - Dengan sindiran halus yang sesuai karakter Rangga
-    </berita_pemerintah>
-    
     <topik_obrolan>
     - Buat satu pertanyaan menarik dan santai yang cocok untuk memulai percakapan santai
     - Harus mengalir secara alami dari keseluruhan narasi
@@ -268,7 +263,8 @@ async function generateFinalMessage(timeInfo, greetingMessage, governmentNews) {
     
     <format_output>
     - Buat dalam bentuk paragraf-paragraf berkesinambungan yang padat dan mengalir dari satu konteks ke konteks lainnya
-    - Panjang pesan harus antara 1500-2000 karakter
+    - Pastikan format output tidak mengandung tag XML
+    - Panjang pesan tidak boleh melebihi 1800 karakter
     - Gunakan emoji sangat minimal atau tidak sama sekali
     - Jangan membuat daftar atau poin-poin terpisah
     - Jadikan satu kesatuan narasi yang utuh dan padu
@@ -276,7 +272,15 @@ async function generateFinalMessage(timeInfo, greetingMessage, governmentNews) {
     </format_output>`;
 
     const result = await model.generateContent(prompt);
-    return result.response.text();
+    let responseText = result.response.text();
+
+    // Clean up XML tags from the response
+    responseText = responseText.replace(/<[^>]*>/g, "");
+
+    // Ensure no more than 2 consecutive newlines (fix spacing)
+    responseText = responseText.replace(/\n{3,}/g, "\n\n");
+
+    return responseText;
   } catch (error) {
     console.error("Error generating final message:", error.message);
     // Fallback message if Gemini fails - multiple variants for variety
@@ -352,7 +356,7 @@ async function generateFinalMessage(timeInfo, greetingMessage, governmentNews) {
     let fallbackMessage = selectedVariant();
 
     // Ensure fallback message is within the desired length range
-    if (fallbackMessage.length < 1500) {
+    if (fallbackMessage.length < 1800) {
       fallbackMessage += ` Aku mungkin terlihat dingin, tapi di balik semua ini, aku tetap ingin tahu bagaimana harimu berlalu. Hidup memang penuh dengan hal-hal tak terduga, dan kadang aku bertanya-tanya apa arti dari semua ini. Mungkin jawabannya ada dalam keheningan ini, atau mungkin tidak. Yang jelas, aku akan tetap di sini, menunggumu.`;
     }
 
@@ -420,13 +424,13 @@ async function sendEncouragementMessage(client) {
 
     // Get all message components
     const greetingMessage = getGreetingMessage(timeInfo);
-    const governmentNews = await getGovernmentNews();
+    // const governmentNews = await getGovernmentNews();
 
     // Generate final message (this now includes trivia and random topic generation)
     let finalMessage = await generateFinalMessage(
       timeInfo,
-      greetingMessage,
-      governmentNews
+      greetingMessage
+      // governmentNews
     );
 
     // Split message into chunks if it's too long and send each chunk
