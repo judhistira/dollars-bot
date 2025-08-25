@@ -46,11 +46,35 @@ async function getWeatherData() {
 }
 
 /**
+ * Determine if the weather is considered "hot" based on Indonesian climate and time of day
+ */
+function isWeatherHot(temperature, timeOfDay) {
+  // Average temperatures in Indonesia by time of day (in Celsius)
+  // These values represent typical comfortable temperatures for each time period
+  const avgTemps = {
+    "Sarapan/Pagi": 26,   // Morning average
+    "Makan Siang": 30,   // Midday average (typically hottest)
+    "Makan Malam": 27    // Evening average
+  };
+
+  // Threshold for considering weather "hot"
+  // If current temperature is 2°C or more above average, it's considered hot
+  const hotThreshold = 2;
+
+  const avgTemp = avgTemps[timeOfDay] || 27; // Default to evening average if timeOfDay is not recognized
+  return temperature >= avgTemp + hotThreshold;
+}
+
+/**
  * Get food recommendation based on weather
  */
 async function getFoodRecommendation(weatherData, timeOfDay) {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+    // Determine if weather is hot based on our new logic
+    const isHot = weatherData ? isWeatherHot(weatherData.temperature, timeOfDay) : false;
+    const weatherCondition = isHot ? "panas" : "tidak panas";
 
     const prompt = `Berikan rekomendasi makanan yang cocok untuk kekasihmu yang memiliki penyakit GERD (gastroesophageal reflux disease) berdasarkan kondisi cuaca dan waktu saat ini:
     
@@ -60,11 +84,14 @@ async function getFoodRecommendation(weatherData, timeOfDay) {
         ? `${weatherData.description} dengan suhu ${weatherData.temperature}°C dan kelembapan ${weatherData.humidity}%`
         : "Data cuaca tidak tersedia"
     }
+    Kondisi Cuaca: ${weatherCondition}
     
     Rekomendasikan 3 makanan dengan format **2 menu berbasis nasi dan 1 menu non-nasi yang variatif**. Semua makanan harus:
     1. Mudah diperoleh di warung makan, warteg, atau restoran terjangkau terdekat.
     2. Ramah bagi penderita GERD (tidak pedas, tidak asam, tidak berlemak).
-    3. Sesuai dengan kondisi cuaca dan waktu saat ini (hangat jika dingin, segar jika panas).
+    3. Sesuai dengan kondisi cuaca dan waktu saat ini:
+       - Jika cuaca panas: berikan makanan yang segar dan ringan
+       - Jika cuaca tidak panas: berikan makanan yang hangat dan mengenyangkan
     4. Cocok untuk orang yang sedang bekerja di kantor (mudah dibawa, tidak terlalu berminyak).
     5. Gunakan bahasa Indonesia yang ramah, personal, dan menarik.
     

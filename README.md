@@ -9,7 +9,7 @@ Bot Discord sederhana yang dirancang untuk menjadi teman pengingat makan bagi pe
 ## ✨ Fitur Utama
 
 - **Pengingat Terjadwal**: Mengirim pengingat makan 3x sehari secara otomatis.
-- **Rekomendasi Cerdas**: Rekomendasi makanan disesuaikan dengan cuaca (panas/dingin) dan waktu (pagi/siang/malam).
+- **Rekomendasi Cerdas**: Rekomendasi makanan disesuaikan dengan cuaca (panas/tidak panas) dan waktu (pagi/siang/malam) berdasarkan perbedaan suhu dengan rata-rata Indonesia.
 - **Aman untuk GERD**: Semua saran makanan difilter agar tidak pedas, tidak asam, dan tidak berlemak.
 - **Personalisasi AI**: Pesan dibuat seolah-olah dari orang terdekat menggunakan Google Gemini API.
 - **Siap Deploy**: Dioptimalkan untuk deployment mudah dan gratis di Vercel.
@@ -105,3 +105,13 @@ Karena batasan paket gratis Vercel, penjadwalan tidak lagi menggunakan Vercel Cr
     - **Malam**: `0 19 * * *`
 
 Dengan cara ini, layanan eksternal akan memicu bot Anda untuk mengirim pengingat sesuai jadwal yang telah ditentukan.
+
+## 🌡️ Klasifikasi Cuaca yang Lebih Cerdas
+
+Bot ini sekarang menggunakan pendekatan yang lebih cerdas untuk menentukan apakah cuaca saat ini "panas" atau "tidak panas":
+
+- **Berdasarkan suhu rata-rata Indonesia**: Menggunakan nilai suhu rata-rata untuk setiap fase waktu (pagi, siang, malam) sebagai acuan
+- **Perbedaan suhu**: Mengklasifikasikan cuaca sebagai "panas" jika suhu saat ini 2°C atau lebih di atas suhu rata-rata untuk fase waktu tersebut
+- **Disesuaikan dengan fase waktu**: Memiliki suhu rata-rata yang berbeda untuk pagi (26°C), siang (30°C), dan malam (27°C)
+
+Pendekatan ini memungkinkan bot untuk memberikan rekomendasi makanan yang lebih tepat sesuai dengan kondisi cuaca relatif terhadap kebiasaan cuaca di Indonesia.

@@ -5,7 +5,7 @@ Bot Discord yang mengingatkan penderita GERD untuk makan teratur dengan rekomend
 
 ## Fitur Utama
 1. Pengingat makan terjadwal via webhook yang dipanggil cron job eksternal.
-2. Rekomendasi makanan berdasarkan cuaca dan waktu.
+2. Rekomendasi makanan berdasarkan cuaca dan waktu dengan penilaian yang lebih cerdas.
 3. Pesan penyemangat untuk makan teratur.
 4. Personalisasi pesan menggunakan Google Gemini.
 5. Dioptimalkan untuk deployment di Vercel.
@@ -38,9 +38,10 @@ Bot Discord yang mengingatkan penderita GERD untuk makan teratur dengan rekomend
 1. Layanan cron job eksternal memanggil endpoint webhook `https://<nama-app-anda>.vercel.app/gerd-reminder` sesuai jadwal yang ditentukan.
 2. Panggilan tersebut memicu serverless function di `index.js`.
 3. Bot mengambil data cuaca dari OpenWeatherMap.
-4. Menggunakan Google Gemini untuk membuat rekomendasi makanan dan pesan penyemangat.
-5. Menggabungkan semua informasi menjadi pesan yang personal dan menarik.
-6. Mengirim pesan ke channel Discord yang ditentukan.
+4. Bot menentukan apakah cuaca saat ini "panas" atau "tidak panas" berdasarkan perbedaan suhu dengan suhu rata-rata di Indonesia ditambah fase waktu (pagi, siang, malam).
+5. Menggunakan Google Gemini untuk membuat rekomendasi makanan dan pesan penyemangat yang disesuaikan dengan kondisi cuaca yang telah diklasifikasikan.
+6. Menggabungkan semua informasi menjadi pesan yang personal dan menarik.
+7. Mengirim pesan ke channel Discord yang ditentukan.
 
 ## Deployment
 ### Lokal (untuk development):
