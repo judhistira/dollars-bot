@@ -1,5 +1,5 @@
 {
-  "name": "gerd-bot",
+  "name": "dollars-bot",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "Discord bot that sends encouraging messages to Dollars Indonesia community members with poetic and tsundere style",
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "axios": "^1.11.0",

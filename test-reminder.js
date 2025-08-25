@@ -1,6 +1,6 @@
 require("dotenv").config();
 const { Client, GatewayIntentBits } = require("discord.js");
-const { sendMealReminder } = require("./index.js");
+const { sendEncouragementMessage } = require("./index.js");
 
 async function runTest() {
   console.log("Starting local test...");
@@ -29,8 +29,8 @@ async function runTest() {
     });
 
     // 3. Send the message
-    console.log("Attempting to send a test reminder...");
-    const result = await sendMealReminder(client);
+    console.log("Attempting to send a test encouragement message...");
+    const result = await sendEncouragementMessage(client);
     console.log("Test finished.");
 
     if (result && result.success) {
@@ -38,8 +38,12 @@ async function runTest() {
     } else {
       console.error("❌ Failure:", result ? result.error : "Unknown error");
     }
+    
+    // Return the result for better integration
+    return result;
   } catch (error) {
     console.error("❌ An unexpected error occurred during the test:", error);
+    return { success: false, error: error.message };
   } finally {
     // 4. Logout and cleanup
     if (client.isReady()) {
@@ -49,4 +53,13 @@ async function runTest() {
   }
 }
 
-runTest();
+// Run the test and handle the result
+runTest().then(result => {
+  if (result && result.success) {
+    console.log("Test completed successfully!");
+    process.exit(0);
+  } else {
+    console.error("Test failed!");
+    process.exit(1);
+  }
+});
