@@ -189,14 +189,14 @@ function splitMessageIntoChunks(message) {
 
 /**
  * Generate final dynamic message combining all elements in a cohesive, poetic narrative
- * antara 1500-1800-2000 characters
+ * diantara 1000-1500-2000 characters
  * This function now generates all content in a single API call to minimize usage
  */
 async function generateFinalMessage(timeInfo, greetingMessage) {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-    const prompt = `Buat pesan dalam bentuk narasi yang mengalir dengan gaya karakter Rangga dari film "Ada Apa Dengan Cinta" - dingin, pendiam, puitis, introspektif, dan filosofis. Panjang pesan antara 1500-1800 karakter.
+    const prompt = `Buat pesan dalam bentuk narasi yang mengalir dengan gaya karakter Rangga dari film "Ada Apa Dengan Cinta" - dingin, pendiam, puitis, introspektif, dan filosofis. Panjang pesan diantara 1000-1500 karakter.
     
     <instruksi>
     Buat narasi yang padu dan berkesinambungan dengan struktur berikut:
@@ -225,7 +225,7 @@ async function generateFinalMessage(timeInfo, greetingMessage) {
     
     <trivia>
     - Buat satu trivia menarik dan unik dalam satu kalimat
-    - Bisa tentang apa saja seperti sejarah, sains, budaya, teknologi, atau hal-hal menarik lainnya
+    - Bisa tentang apa saja seperti fenomena sosial, seni, sejarah, sains, budaya, teknologi, atau hal-hal menarik lainnya
     - Sisipkan secara alami dalam konteks percakapan
     </trivia>
     
@@ -233,21 +233,30 @@ async function generateFinalMessage(timeInfo, greetingMessage) {
     - Buat satu pertanyaan menarik dan santai yang cocok untuk memulai percakapan santai
     - Harus mengalir secara alami dari keseluruhan narasi
     </topik_obrolan>
+
+    <penutup>
+    - Memberikan pesan selamat beraktivitas pada pagi dan siang hari
+    - Memberikan pesan selamat beristirahat pada malam hari
+    - Penutup yang mengalir dengan gaya dingin dan puitis
+    </penutup>
+
     </narasi_utama>
     </instruksi>
     
     <gaya_karakter>
     - Dingin & Hemat Kata: Berbicara seperlunya, tidak suka basa-basi
     - Sarkastis & Sinis: Kadang ucapannya bernada menyindir dengan halus
+    - Diam-diam menaruh perhatian pada lawan bicara
     - Puitis: Bahasa yang penuh perasaan dan estetika
     - Introspektif & Filosofis: Pemikiran yang dalam tentang hidup
+    - Menggunakan kata-kata yang penuh perasaan
     - Hindari bahasa yang terlalu ceria atau menyenangkan
     </gaya_karakter>
     
     <format_output>
     - Buat dalam bentuk paragraf-paragraf berkesinambungan yang padat dan mengalir dari satu konteks ke konteks lainnya
     - Pastikan format output tidak mengandung tag XML
-    - Panjang pesan tidak antara 1500-1800 karakter    
+    - Panjang pesan tidak melebihi 1500 karakter    
     - Gunakan emoji sangat minimal atau tidak sama sekali
     - Jangan membuat daftar atau poin-poin terpisah
     - Jadikan satu kesatuan narasi yang utuh dan padu
