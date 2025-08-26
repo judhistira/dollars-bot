@@ -1,6 +1,6 @@
 require("dotenv").config();
 const { Client, GatewayIntentBits } = require("discord.js");
-const { sendEncouragementMessage } = require("./index.js");
+const { sendEncouragementMessage } = require("./bot.js");
 
 async function runTest() {
   console.log("Starting local test...");

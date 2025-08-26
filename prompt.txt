@@ -1,84 +1,42 @@
-# Dollars Indonesia Community Bot - Dokumentasi Lengkap (External Cron Edition)
+# Dollars Indonesia Community Bot - Dokumentasi Proyek
 
 ## Deskripsi
-Bot Discord yang menyemangati warga komunitas "Dollars Indonesia" dengan pesan-pesan puitis, dingin, dan introspektif ala karakter Rangga di film "Ada Apa Dengan Cinta". Bot ini menggunakan Google Gemini API dan NewsAPI.org, serta di-deploy di Vercel. Penjadwalan ditangani oleh layanan cron job eksternal.
+Bot Discord yang menyemangati warga komunitas "Dollars Indonesia" dengan pesan-pesan puitis, dingin, dan introspektif ala karakter Rangga di film "Ada Apa Dengan Cinta".
 
-## Fitur Utama
-1. Ucapan selamat pagi, siang, dan malam yang terjadwal via webhook yang dipanggil cron job eksternal.
-2. Gaya bahasa puitis, dingin, dan introspektif ala karakter Rangga.
-3. Ucapan pagi/siang/malam berada di baris paling atas sendiri dengan gaya karakter Rangga.
-4. Pesan berbentuk narasi yang padu dan berkesinambungan antar setiap konteks.
-5. Panjang pesan antara 1500-2000 karakter per pesan.
-6. Setiap pesan berisi trivia menarik yang disisipkan secara alami.
-7. Setiap pesan berisi berita pemerintah terbaru (dari NewsAPI.org) dengan sindiran halus.
-8. Bot bisa tiba-tiba membahas topik random untuk obrolan.
-9. Personalisasi pesan menggunakan Google Gemini dengan prompt terstruktur.
-10. Optimasi penggunaan API dengan menggabungkan beberapa panggilan dalam satu permintaan.
-11. Banyak varian fallback message untuk menjaga variasi konten saat API tidak tersedia.
-12. Dioptimalkan untuk deployment di Vercel.
-
-## Teknologi yang Digunakan
-- Node.js
-- Discord.js
-- Google Gemini API (gemini-1.5-flash)
-- NewsAPI.org
-- Express.js (untuk endpoint webhook)
-- Layanan Cron Job Eksternal (contoh: cron-job.org)
-
-## File yang Dibuat
-1. index.js - File utama bot dan serverless function (webhook endpoint).
-2. .env - File konfigurasi environment lokal.
-3. package.json - Dependensi dan script.
-4. README.md - Dokumentasi.
-5. vercel.json - Konfigurasi deployment untuk Vercel.
-6. .gitignore - File yang diabaikan.
-7. test-reminder.js - Script untuk testing lokal.
+## Struktur Proyek
+Proyek ini memiliki struktur modular untuk kemudahan pengelolaan:
+- **`index.js`**: Entry point aplikasi. Menjalankan server Express dan menangani webhook.
+- **`bot.js`**: Logika inti bot, memproses dan mengirim pesan.
+- **`gemini.js`**: Mengelola interaksi dengan Google Gemini API.
+- **`utils.js`**: Kumpulan fungsi utilitas.
+- **`test-console.js`**: Skrip untuk tes output di konsol.
+- **`test-reminder.js`**: Skrip untuk tes pengiriman pesan ke Discord.
+- **`.env.example`**: Contoh file environment.
+- **`package.json`**: Dependensi dan skrip proyek.
+- **`README.md`**: Dokumentasi utama.
 
 ## Konfigurasi Environment Variables
-- DISCORD_TOKEN: Token bot Discord
-- GEMINI_API_KEY: API key Google Gemini
-- NEWS_API_KEY: API key NewsAPI.org (opsional)
-- CHANNEL_ID: ID channel Discord tujuan
+- `DISCORD_TOKEN`: Token bot Discord.
+- `GEMINI_API_KEY`: API key Google Gemini.
+- `NEWS_API_KEY`: API key NewsAPI.org (opsional).
+- `CHANNEL_ID`: ID channel Discord tujuan.
+- `GEMINI_MODEL`: Model Gemini yang digunakan (e.g., "gemini-1.5-flash").
+- `TIMEZONE`: Zona waktu untuk bot (e.g., "Asia/Jakarta").
 
 ## Cara Kerja
-1. Layanan cron job eksternal memanggil endpoint webhook `https://<nama-app-anda>.vercel.app/dollars-reminder` sesuai jadwal yang ditentukan.
-2. Panggilan tersebut memicu serverless function di `index.js`.
-3. Bot menentukan waktu saat ini (pagi/siang/malam) dan apakah hari ini weekday atau weekend.
-4. Menggunakan NewsAPI.org untuk mendapatkan berita terbaru tentang pemerintah Indonesia.
-5. Menggunakan Google Gemini dengan prompt terstruktur menggunakan tag XML untuk membuat dalam satu panggilan API:
-   - Ucapan sesuai waktu dengan gaya puitis, dingin, dan introspektif ala Rangga
-   - Pesan penyemangat untuk bekerja/beraktivitas di pagi dan siang hari
-   - Pesan selamat beristirahat dengan merenung di malam hari
-   - Pesan penyemangat untuk kegiatan weekend pada umumnya
-   - Trivia menarik yang disisipkan secara alami
-   - Berita pemerintah dengan sindiran halus (jika NewsAPI tidak tersedia)
-   - Topik obrolan random
-6. Menghasilkan pesan dengan panjang antara 1500-2000 karakter
-7. Jika pesan melebihi 2000 karakter, membaginya secara cerdas dan mengirimnya sebagai beberapa pesan
-8. Mengirim pesan ke channel Discord yang ditentukan.
-
-## Deployment
-### Lokal (untuk development):
-- Gunakan `npm run test-reminder` untuk menjalankan tes pengiriman pesan secara manual.
-
-### Vercel (untuk produksi):
-- Cukup lakukan `git push` ke repositori yang terhubung dengan Vercel.
-- Vercel akan secara otomatis men-deploy bot.
-- Pastikan semua Environment Variables sudah diatur di dashboard Vercel.
-- Atur layanan cron job eksternal untuk memanggil URL webhook Anda.
+1.  Layanan cron job eksternal memanggil endpoint webhook (`/dollars-reminder`) di `index.js`.
+2.  `index.js` menerima panggilan dan memicu `sendEncouragementMessage` dari `bot.js`.
+3.  `bot.js` menjalankan logika utama:
+    a.  Menggunakan `getTimeInfo` dari `utils.js` untuk menentukan waktu.
+    b.  Memanggil `getGreetingMessage` untuk membuat sapaan.
+    c.  Memanggil `generateFinalMessage` dari `gemini.js` untuk membuat konten pesan utama dengan AI.
+    d.  Menggunakan `splitMessageIntoChunks` dari `utils.js` jika pesan terlalu panjang.
+    e.  Mengirim pesan ke channel Discord.
+4.  `gemini.js` berisi semua detail prompt yang dikirim ke Google Gemini API.
 
 ## Testing
-- Gunakan `npm run test-reminder` untuk menguji fungsi pengiriman pesan secara langsung, tanpa perlu menjalankan server. Skrip ini akan login, mengirim satu pesan, lalu keluar.
+- **Tes Konsol**: `npm run test:console`
+- **Tes Pengingat**: `npm run test:reminder`
 
-## Catatan Penting
-- Penjadwalan sepenuhnya diatur oleh layanan cron job eksternal.
-- File `vercel.json` tidak lagi berisi konfigurasi `crons`.
-- Jika NEWS_API_KEY tidak disediakan, bot akan menggunakan fallback dengan Google Gemini untuk membuat berita "pseudo" dengan sindiran.
-- Gaya bahasa bot mengikuti karakter Rangga dari film "Ada Apa Dengan Cita": dingin, pendiam, puitis, introspektif, dan filosofis.
-- Ucapan pagi/siang/malam berada di baris paling atas sendiri dengan gaya karakter Rangga.
-- Pesan berbentuk narasi yang padu dan berkesinambungan antar setiap konteks.
-- Panjang pesan antara 1500-2000 karakter per pesan.
-- Jika pesan melebihi 2000 karakter, akan dibagi secara cerdas dan dikirim sebagai beberapa pesan.
-- Prompt menggunakan tag XML untuk struktur yang lebih jelas dan dapat dimengerti LLM.
-- Optimasi penggunaan API dengan menggabungkan multiple panggilan dalam satu permintaan.
-- Banyak varian fallback message untuk menjaga variasi konten saat API tidak tersedia.
+---
+*Catatan: Sebagian besar konten lama di file ini yang berisi contoh kode dan prompt telah dipindahkan dan diimplementasikan langsung ke dalam file-file JavaScript yang relevan (`gemini.js`, `bot.js`, dll.) selama proses refactoring.*
