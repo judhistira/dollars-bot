@@ -25,9 +25,9 @@ function getTimeInfo() {
   const isWeekend = now.getDay() === 0 || now.getDay() === 6; // 0 = Sunday, 6 = Saturday
 
   let timeOfDay;
-  if (hourInWIB < 12) {
+  if (hourInWIB < 11) {
     timeOfDay = "Pagi";
-  } else if (hourInWIB < 18) {
+  } else if (hourInWIB < 17) {
     timeOfDay = "Siang";
   } else {
     timeOfDay = "Malam";
