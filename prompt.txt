@@ -19,7 +19,7 @@ Proyek ini memiliki struktur modular untuk kemudahan pengelolaan:
 - `DISCORD_TOKEN`: Token bot Discord.
 - `GEMINI_API_KEY`: API key Google Gemini.
 - `NEWS_API_KEY`: API key NewsAPI.org (opsional).
-- `CHANNEL_ID`: ID channel Discord tujuan.
+- `CHANNEL_IDS`: ID channel Discord tujuan (pisahkan dengan koma jika lebih dari satu).
 - `GEMINI_MODEL`: Model Gemini yang digunakan (e.g., "gemini-1.5-flash").
 - `TIMEZONE`: Zona waktu untuk bot (e.g., "Asia/Jakarta").
 

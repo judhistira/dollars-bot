@@ -38,7 +38,7 @@ app.all(WEBHOOK_PATH, async (req, res) => {
   try {
     // Login and wait for ready
     await new Promise((resolve, reject) => {
-      client.once("ready", () => {
+      client.once("clientReady", () => {
         console.log(`Bot is ready as ${client.user.tag}`);
         resolve();
       });

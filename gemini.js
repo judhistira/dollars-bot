@@ -86,7 +86,7 @@ async function generateFinalMessage(timeInfo, greetingMessage, governmentNews) {
       model: process.env.GEMINI_MODEL || "gemini-2.5-flash",
     });
 
-    const prompt = `Buat pesan dalam bentuk narasi yang mengalir dengan gaya karakter Rangga dari film \"Ada Apa Dengan Cinta\" - dingin, pendiam, puitis, introspektif, dan filosofis. Panjang pesan sekitar 1500 hingga 2000 karakter.
+    const prompt = `Buat pesan dalam bentuk narasi yang mengalir dengan gaya karakter Rangga dari film \"Ada Apa Dengan Cinta\" - dingin, pendiam, puitis, introspektif, dan filosofis. Panjang pesan tidak lebih dari 1500 karakter.
     
     <instruksi>
     Buat narasi yang padu dan berkesinambungan dengan struktur berikut:
@@ -100,14 +100,15 @@ async function generateFinalMessage(timeInfo, greetingMessage, governmentNews) {
     
     <konteks_waktu>
     Waktu: ${timeInfo.timeOfDay}
+    Hari: ${timeInfo.dayName} - gunakan kiasan lain untuk menggambarkan hari.
     Akhir Pekan: ${timeInfo.isWeekend ? "Ya" : "Tidak"}
     </konteks_waktu>
     
     <penyemangat>
-    - Pesan penyemangat sesuai waktu dan hari (weekday/weekend) dengan gaya dingin dan puitis
-    - Pada pagi/siang saat weekday hari berikan pesan semangat beraktivitas kerja
-    - Pada pagi/siang saat weekend ingatkan untuk bersenang-senang
-    - Pada malam hari berikan pesan selamat beristirahat
+    - Pesan penyemangat sesuai waktu dan hari (weekday/weekend) dengan gaya dingin dan puitis dengen ketentuan berikut:
+      1. Pada malam hari berikan pesan selamat beristirahat
+      2. Pada pagi/siang saat weekday hari berikan pesan semangat beraktivitas kerja
+      3. Pada pagi/siang saat weekend ingatkan untuk bersenang-senang
     - Hindari bahasa yang terlalu ceria atau semangat
     </penyemangat>
     
@@ -118,16 +119,11 @@ async function generateFinalMessage(timeInfo, greetingMessage, governmentNews) {
     
     <trivia>
     - Buat satu trivia tentang apa saja seperti pop culture, hobi, musik, film, sains, teknologi, atau hal-hal menarik lainnya yang menarik dan unik dalam satu kalimat
+    - Ubah trivia tersebut menjadi topik obrolan yang diakhiri dengan pertanyaan lanjutan pada pembaca yang sangat personal
     - Sisipkan secara alami dalam konteks percakapan
+    - Penutup yang mengalir dengan gaya dingin dan puitis
     </trivia>
     
-    <topik_obrolan>
-    - Buat satu pertanyaan menarik dan santai yang cocok untuk memulai percakapan santai
-    - Tulis dengan gaya penuh perhatian dan sangat personal terhadap lawan bicara
-    - Harus mengalir secara alami dari keseluruhan narasi
-    - Penutup yang mengalir dengan gaya dingin dan puitis
-    </topik_obrolan>
-
     </narasi_utama>
     </instruksi>
     
@@ -146,7 +142,7 @@ async function generateFinalMessage(timeInfo, greetingMessage, governmentNews) {
     - Ucapan awal memiliki baris sendiri
     - Pisahkan setiap paragraf dengan satu baris kosong.
     - Pastikan format output tidak mengandung tag XML
-    - Panjang pesan sekitar 1500 hingga 2000 karakter    
+    - Panjang pesan tidak lebih dari 1500 karakter    
     - Gunakan emoji sangat minimal atau tidak sama sekali
     - Jangan membuat daftar atau poin-poin terpisah
     - Jadikan satu kesatuan narasi yang utuh dan padu

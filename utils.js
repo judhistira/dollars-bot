@@ -13,6 +13,9 @@ function getTimeInfo() {
   );
 
   const isWeekend = now.getDay() === 0 || now.getDay() === 6; // 0 = Sunday, 6 = Saturday
+  const dayName = new Intl.DateTimeFormat("id-ID", { weekday: "long" }).format(
+    now
+  );
 
   let timeOfDay;
   if (hourInWIB < 11) {
@@ -27,6 +30,7 @@ function getTimeInfo() {
     timeOfDay,
     isWeekend,
     hour: hourInWIB,
+    dayName,
   };
 }
 

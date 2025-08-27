@@ -49,8 +49,8 @@ Jika kamu ingin mencoba atau mengembangkan bot ini secara lokal, silakan ikuti l
     # API Key dari NewsAPI.org (opsional)
     NEWS_API_KEY="..."
 
-    # ID Channel Discord tujuan
-    CHANNEL_ID="..."
+    # ID Channel Discord tujuan (pisahkan dengan koma jika lebih dari satu)
+    CHANNEL_IDS="..."
 
     # Model AI yang ingin digunakan
     GEMINI_MODEL="gemini-2.5-flash"

@@ -235,10 +235,14 @@ function getGreetingMessage(timeInfo) {
  */
 async function sendEncouragementMessage(client) {
   try {
-    const channel = await client.channels.fetch(process.env.CHANNEL_ID);
-    if (!channel) {
-      console.error("Channel not found");
-      return { success: false, error: "Channel not found" };
+    const channelIds = process.env.CHANNEL_IDS.split(",").map((id) =>
+      id.trim()
+    );
+    if (channelIds.length === 0) {
+      console.error(
+        "No channel IDs found in CHANNEL_IDS environment variable."
+      );
+      return { success: false, error: "No channel IDs specified." };
     }
 
     // Get time information
@@ -258,27 +262,51 @@ async function sendEncouragementMessage(client) {
     // Split message into chunks if it's too long and send each chunk
     const messageChunks = splitMessageIntoChunks(finalMessage);
 
-    for (let i = 0; i < messageChunks.length; i++) {
-      let chunkToSend = messageChunks[i];
-      if (i > 0) {
-        chunkToSend = "​\n" + chunkToSend;
-      }
-      await channel.send(chunkToSend);
-      // Add a small delay between messages to avoid rate limiting
-      if (messageChunks.length > 1 && i < messageChunks.length - 1) {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+    const results = [];
+    for (const channelId of channelIds) {
+      try {
+        const channel = await client.channels.fetch(channelId);
+        if (!channel) {
+          console.warn(`Channel with ID ${channelId} not found. Skipping.`);
+          results.push({
+            channelId,
+            success: false,
+            error: "Channel not found",
+          });
+          continue;
+        }
+
+        for (let i = 0; i < messageChunks.length; i++) {
+          let chunkToSend = messageChunks[i];
+          if (i > 0) {
+            chunkToSend = "​\n" + chunkToSend;
+          }
+          await channel.send(chunkToSend);
+          // Add a small delay between messages to avoid rate limiting
+          if (messageChunks.length > 1 && i < messageChunks.length - 1) {
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+          }
+        }
+
+        console.log(
+          `Encouragement message sent successfully to channel ${channelId} in ${messageChunks.length} part(s)`
+        );
+        results.push({
+          channelId,
+          success: true,
+          message: `Encouragement message sent successfully in ${messageChunks.length} part(s)`,
+        });
+      } catch (error) {
+        console.error(
+          `Error sending message to channel ${channelId}:`,
+          error.message
+        );
+        results.push({ channelId, success: false, error: error.message });
       }
     }
-
-    console.log(
-      `Encouragement message sent successfully in ${messageChunks.length} part(s)`
-    );
-    return {
-      success: true,
-      message: `Encouragement message sent successfully in ${messageChunks.length} part(s)`,
-    };
+    return { success: results.some((r) => r.success), results };
   } catch (error) {
-    console.error("Error sending encouragement message:", error.message);
+    console.error("Error in sendEncouragementMessage:", error.message);
     return { success: false, error: error.message };
   }
 }

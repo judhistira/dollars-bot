@@ -21,7 +21,7 @@ async function runTest() {
   try {
     // 2. Login and wait for ready
     await new Promise((resolve, reject) => {
-      client.once("ready", () => {
+      client.once("clientReady", () => {
         console.log(`Bot is ready as ${client.user.tag}`);
         resolve();
       });
