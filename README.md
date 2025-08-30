@@ -9,13 +9,52 @@ Bot ini sudah aktif dan bisa kamu temui langsung di server **Dollars Indonesia**
 ## 🌟 Fitur Utama
 
 - **Pesan Terjadwal**: Mengirimkan ucapan selamat pagi, siang, dan malam secara otomatis.
-- **Gaya Bahasa Khas**: Setiap pesan dirangkai dengan gaya bahasa yang puitis, introspektif, dan terkadang sedikit sinis, khas karakter Rangga.
+- **Gaya Bahasa Khas & Dinamis**: Setiap pesan dirangkai dengan gaya bahasa yang puitis, introspektif, dan terkadang sedikit sinis, khas karakter Rangga. Kini mendukung berbagai gaya bahasa dan tema pesan yang dapat dikonfigurasi melalui variabel lingkungan, termasuk gaya 'soe_hok_gie' yang memiliki sapaan uniknya sendiri.
 - **Konten Bervariasi**: Tidak hanya sapaan, bot juga menyajikan:
   - **Trivia Menarik**: Fakta-fakta unik untuk menambah wawasan.
   - **Berita Terkini**: Informasi seputar pemerintah yang dibalut dengan komentar halus.
   - **Topik Diskusi**: Pertanyaan-pertanyaan acak untuk memancing obrolan di server.
 - **Penanganan Pesan Cerdas**: Pesan yang melebihi batas karakter Discord akan secara otomatis dipecah menjadi beberapa bagian agar tetap nyaman dibaca.
 - **Deployment Mudah**: Proyek ini telah dioptimalkan untuk proses deployment yang mudah dan gratis melalui Vercel.
+
+## 🏗️ Arsitektur & Pola Desain
+
+Proyek ini telah direfaktor secara ekstensif untuk mengadopsi pola desain modern, meningkatkan modularitas, pemeliharaan, dan ekstensibilitas. Beberapa pola yang diterapkan meliputi:
+
+-   **Singleton**: Untuk pengelolaan instance Discord Client yang efisien.
+-   **Strategy**: Digunakan untuk pemilihan pesan sapaan dan sumber berita, memungkinkan penambahan variasi dengan mudah.
+-   **Builder**: Untuk konstruksi prompt Gemini AI yang kompleks dan dinamis, mendukung berbagai tema pesan dan gaya bahasa.
+-   **Factory Method**: Untuk pembuatan konten fallback (trivia, topik, pesan).
+-   **Command**: Mengenkapsulasi proses pengiriman pesan untuk operasi yang lebih terstruktur.
+-   **Chain of Responsibility**: Untuk mekanisme pemisahan pesan yang fleksibel.
+
+Struktur direktori proyek kini lebih terorganisir:
+
+```
+. (root)
+├── src/
+│   ├── builders/             # Pola Builder untuk prompt AI
+│   ├── commands/             # Pola Command untuk operasi
+│   ├── config/               # Konfigurasi terpusat
+│   ├── factories/            # Pola Factory untuk objek
+│   ├── message/              # Modul terkait pesan (misal: generator sapaan)
+│   ├── messageSplitters/     # Pola Chain of Responsibility untuk pemisahan pesan
+│   ├── newsStrategies/       # Pola Strategy untuk sumber berita
+│   ├── services/             # Layanan (misal: Discord Client Singleton)
+│   ├── bot.js                # Logika inti bot
+│   ├── gemini.js             # Integrasi Gemini AI
+│   └── utils.js              # Fungsi utilitas
+├── .env.example
+├── .gitignore
+├── package.json
+├── package-lock.json
+├── prompt.txt
+├── README.md
+├── test-console.js
+├── test-reminder.js
+├── send-custom-message.js
+└── vercel.json
+```
 
 ## 🔧 Panduan Instalasi (Lokal)
 
@@ -57,6 +96,12 @@ Jika kamu ingin mencoba atau mengembangkan bot ini secara lokal, silakan ikuti l
 
     # Zona waktu (misal: Asia/Jakarta)
     TIMEZONE="Asia/Jakarta"
+
+    # Tema pesan (misal: rangga, activist_commentary)
+    MESSAGE_THEME="rangga"
+
+    # Gaya bahasa (misal: poetic, sarcastic, motivational, soe_hok_gie)
+    LANGUAGE_STYLE="poetic"
     ```
 
 ## 🔑 Panduan Mendapatkan Kunci API

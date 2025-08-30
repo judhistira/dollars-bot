@@ -1,17 +1,14 @@
 const express = require("express");
-const { Client, GatewayIntentBits } = require("discord.js");
-const dotenv = require("dotenv");
-const { sendEncouragementMessage } = require("./bot.js");
-
-// Load environment variables
-dotenv.config();
+const getDiscordClient = require("./services/discordService");
+const config = require("./config");
+const { SendMessageCommand } = require("./bot.js");
 
 // Initialize Express app
 const app = express();
 app.use(express.json());
 
 // Webhook configuration
-const WEBHOOK_PATH = process.env.WEBHOOK_PATH || "/dollars-reminder";
+const WEBHOOK_PATH = config.WEBHOOK_PATH;
 
 // Health check endpoint
 app.get("/health", (req, res) => {
@@ -27,29 +24,17 @@ app.all(WEBHOOK_PATH, async (req, res) => {
   const MAX_RETRIES = 3;
   const RETRY_DELAY = 2000; // 2 seconds
 
-  const client = new Client({
-    intents: [
-      GatewayIntentBits.Guilds,
-      GatewayIntentBits.GuildMessages,
-      GatewayIntentBits.MessageContent,
-    ],
-  });
+  let client;
+  try {
+    client = await getDiscordClient();
 
   try {
-    // Login and wait for ready
-    await new Promise((resolve, reject) => {
-      client.once("clientReady", () => {
-        console.log(`Bot is ready as ${client.user.tag}`);
-        resolve();
-      });
-      client.on("error", reject);
-      client.login(process.env.DISCORD_TOKEN).catch(reject);
-    });
+    
 
     let result;
     for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
       console.log(`Attempt ${attempt} to send message...`);
-      result = await sendEncouragementMessage(client);
+      result = await new SendMessageCommand(client).execute();
       if (result.success) {
         console.log(`Message sent successfully on attempt ${attempt}.`);
         break; // Exit loop on success
@@ -69,16 +54,10 @@ app.all(WEBHOOK_PATH, async (req, res) => {
     console.error("An error occurred during the bot lifecycle:", error);
     res.status(500).json({ success: false, error: error.message });
   } finally {
-    // Logout and cleanup
-    if (client.isReady()) {
-      console.log("Closing Discord client connection.");
-      client.destroy();
-    }
+    // No client.destroy() here, as it's a singleton and should persist
   }
 });
 
 // Export the app for Vercel
 module.exports = app;
 
-// Export for local testing
-module.exports.sendEncouragementMessage = sendEncouragementMessage;

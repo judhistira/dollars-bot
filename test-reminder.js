@@ -1,36 +1,17 @@
-require("dotenv").config();
-const { Client, GatewayIntentBits } = require("discord.js");
-const { sendEncouragementMessage } = require("./bot.js");
+const config = require("./src/config");
+const getDiscordClient = require("./src/services/discordService");
+const { SendMessageCommand } = require("./src/bot.js");
 
 async function runTest() {
   console.log("Starting local test...");
 
-  // 1. Initialize Discord Client
-  const client = new Client({
-    intents: [
-      GatewayIntentBits.Guilds,
-      GatewayIntentBits.GuildMessages,
-      GatewayIntentBits.MessageContent,
-    ],
-  });
-
-  client.on("error", (error) => {
-    console.error("Discord client encountered an error:", error);
-  });
-
+  let client;
   try {
-    // 2. Login and wait for ready
-    await new Promise((resolve, reject) => {
-      client.once("clientReady", () => {
-        console.log(`Bot is ready as ${client.user.tag}`);
-        resolve();
-      });
-      client.login(process.env.DISCORD_TOKEN).catch(reject);
-    });
+    client = await getDiscordClient();
 
     // 3. Send the message
     console.log("Attempting to send a test encouragement message...");
-    const result = await sendEncouragementMessage(client);
+    const result = await new SendMessageCommand(client).execute();
     console.log("Test finished.");
 
     if (result && result.success) {
@@ -45,11 +26,7 @@ async function runTest() {
     console.error("❌ An unexpected error occurred during the test:", error);
     return { success: false, error: error.message };
   } finally {
-    // 4. Logout and cleanup
-    if (client.isReady()) {
-      console.log("Closing Discord client connection.");
-      client.destroy();
-    }
+    // No client.destroy() here, as it's a singleton and should persist
   }
 }
 

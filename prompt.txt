@@ -1,14 +1,23 @@
 # Dollars Indonesia Community Bot - Dokumentasi Proyek
 
 ## Deskripsi
-Bot Discord yang menyemangati warga komunitas "Dollars Indonesia" dengan pesan-pesan puitis, dingin, dan introspektif ala karakter Rangga di film "Ada Apa Dengan Cinta".
+Bot Discord yang menyemangati warga komunitas "Dollars Indonesia" dengan pesan-pesan puitis, dingin, dan introspektif ala karakter Rangga di film "Ada Apa Dengan Cinta", serta mendukung berbagai gaya bahasa lain seperti gaya Soe Hok Gie yang memiliki sapaan uniknya sendiri.
 
 ## Struktur Proyek
-Proyek ini memiliki struktur modular untuk kemudahan pengelolaan:
-- **`index.js`**: Entry point aplikasi. Menjalankan server Express dan menangani webhook.
-- **`bot.js`**: Logika inti bot, memproses dan mengirim pesan.
-- **`gemini.js`**: Mengelola interaksi dengan Google Gemini API.
-- **`utils.js`**: Kumpulan fungsi utilitas.
+Proyek ini kini memiliki struktur yang lebih modular dan terorganisir, mengadopsi berbagai pola desain modern:
+- **`src/`**: Direktori utama untuk semua kode sumber.
+  - **`src/builders/`**: Berisi implementasi pola Builder untuk konstruksi prompt AI.
+  - **`src/commands/`**: Berisi implementasi pola Command untuk operasi bot.
+  - **`src/config/`**: Modul konfigurasi terpusat untuk variabel lingkungan.
+  - **`src/factories/`**: Berisi implementasi pola Factory untuk objek tertentu.
+  - **`src/message/`**: Modul terkait pesan, termasuk generator sapaan.
+  - **`src/messageSplitters/`**: Berisi implementasi pola Chain of Responsibility untuk pemisahan pesan.
+  - **`src/newsStrategies/`**: Berisi implementasi pola Strategy untuk sumber berita.
+  - **`src/services/`**: Berisi layanan seperti Discord Client Singleton.
+  - **`src/bot.js`**: Logika inti bot.
+  - **`src/gemini.js`**: Mengelola interaksi dengan Google Gemini API.
+  - **`src/utils.js`**: Kumpulan fungsi utilitas.
+- **`index.js`**: (Dipindahkan ke `src/index.js`) Entry point aplikasi. Menjalankan server Express dan menangani webhook.
 - **`test-console.js`**: Skrip untuk tes output di konsol.
 - **`test-reminder.js`**: Skrip untuk tes pengiriman pesan ke Discord.
 - **`.env.example`**: Contoh file environment.
@@ -22,21 +31,25 @@ Proyek ini memiliki struktur modular untuk kemudahan pengelolaan:
 - `CHANNEL_IDS`: ID channel Discord tujuan (pisahkan dengan koma jika lebih dari satu).
 - `GEMINI_MODEL`: Model Gemini yang digunakan (e.g., "gemini-1.5-flash").
 - `TIMEZONE`: Zona waktu untuk bot (e.g., "Asia/Jakarta").
+- `MESSAGE_THEME`: Tema pesan yang digunakan (e.g., "rangga", "activist_commentary").
+- `LANGUAGE_STYLE`: Gaya bahasa yang digunakan (e.g., "poetic", "sarcastic", "motivational", "soe_hok_gie").
 
 ## Cara Kerja
-1.  Layanan cron job eksternal memanggil endpoint webhook (`/dollars-reminder`) di `index.js`.
-2.  `index.js` menerima panggilan dan memicu `sendEncouragementMessage` dari `bot.js`.
-3.  `bot.js` menjalankan logika utama:
-    a.  Menggunakan `getTimeInfo` dari `utils.js` untuk menentukan waktu.
-    b.  Memanggil `getGreetingMessage` untuk membuat sapaan.
-    c.  Memanggil `generateFinalMessage` dari `gemini.js` untuk membuat konten pesan utama dengan AI.
-    d.  Menggunakan `splitMessageIntoChunks` dari `utils.js` jika pesan terlalu panjang.
-    e.  Mengirim pesan ke channel Discord.
-4.  `gemini.js` berisi semua detail prompt yang dikirim ke Google Gemini API.
+Proyek ini kini memanfaatkan pola desain modern untuk alur kerja yang lebih terstruktur:
+1.  Layanan cron job eksternal memanggil endpoint webhook (`/dollars-reminder`) di `src/index.js`.
+2.  `src/index.js` menerima panggilan dan memicu eksekusi `SendMessageCommand`.
+3.  `SendMessageCommand` (dari `src/commands/`) menjalankan logika utama:
+    a.  Menggunakan `getTimeInfo` dari `src/utils.js` untuk menentukan waktu.
+    b.  Memanggil `getGreetingMessage` (dari `src/message/greetingGenerator.js`) untuk membuat sapaan.
+    c.  Memanggil `getGovernmentNews` (dari `src/gemini.js`, yang menggunakan pola Strategy untuk sumber berita) untuk mendapatkan berita.
+    d.  Memanggil `generateFinalMessage` (dari `src/gemini.js`, yang menggunakan pola Builder untuk prompt AI) untuk membuat konten pesan utama dengan AI, berdasarkan `MESSAGE_THEME` dan `LANGUAGE_STYLE` yang dikonfigurasi.
+    e.  Menggunakan `splitMessageIntoChunks` (dari `src/utils.js`, yang menggunakan pola Chain of Responsibility) jika pesan terlalu panjang.
+    f.  Mengirim pesan ke channel Discord.
+4.  `src/gemini.js` berisi semua detail prompt yang dikirim ke Google Gemini API, serta logika fallback (menggunakan pola Factory Method).
 
 ## Testing
-- **Tes Konsol**: `npm run test:console`
-- **Tes Pengingat**: `npm run test:reminder`
+- **Tes Konsol**: `bun run test:console`
+- **Tes Pengingat**: `bun run test:reminder`
 
 ---
 *Catatan: Sebagian besar konten lama di file ini yang berisi contoh kode dan prompt telah dipindahkan dan diimplementasikan langsung ke dalam file-file JavaScript yang relevan (`gemini.js`, `bot.js`, dll.) selama proses refactoring.*

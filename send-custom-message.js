@@ -1,7 +1,7 @@
-require("dotenv").config();
-const { Client, GatewayIntentBits } = require("discord.js");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const { splitMessageIntoChunks } = require("./utils.js");
+const config = require("./src/config");
+const getDiscordClient = require("./src/services/discordService");
+const { splitMessageIntoChunks } = require("./src/utils.js");
 
 // --- KONFIGURASI ---
 // Isi prompt kustom Anda di sini.
@@ -70,23 +70,16 @@ const customPrompt = `Buat pesan dalam bentuk narasi yang mengalir dengan gaya k
     </format_output>`;
 
 // --- INISIALISASI ---
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-  ],
-});
+const genAI = new GoogleGenerativeAI(config.GEMINI_API_KEY);
 
 // --- FUNGSI UTAMA ---
 async function sendCustomMessage() {
   console.log("Memulai pengiriman pesan kustom...");
 
   if (
-    !process.env.DISCORD_TOKEN ||
-    !process.env.CHANNEL_IDS ||
-    !process.env.GEMINI_API_KEY
+    !config.DISCORD_TOKEN ||
+    config.CHANNEL_IDS.length === 0 ||
+    !config.GEMINI_API_KEY
   ) {
     console.error(
       "Pastikan DISCORD_TOKEN, CHANNEL_IDS, dan GEMINI_API_KEY telah diatur di file .env Anda."
@@ -94,21 +87,15 @@ async function sendCustomMessage() {
     process.exit(1);
   }
 
+  let client;
   try {
     // 1. Login ke Discord
-    await new Promise((resolve, reject) => {
-      client.once("clientReady", () => {
-        console.log(`Bot terhubung sebagai ${client.user.tag}`);
-        resolve();
-      });
-      client.on("error", reject);
-      client.login(process.env.DISCORD_TOKEN).catch(reject);
-    });
+    client = await getDiscordClient();
 
     // 2. Hasilkan pesan menggunakan Gemini
     console.log("Menghasilkan konten pesan dengan Gemini...");
     const model = genAI.getGenerativeModel({
-      model: process.env.GEMINI_MODEL || "gemini-2.5-flash",
+      model: config.GEMINI_MODEL,
     });
     const result = await model.generateContent(customPrompt);
     const generatedMessage = result.response.text();
@@ -124,9 +111,7 @@ async function sendCustomMessage() {
     const messageChunks = splitMessageIntoChunks(generatedMessage);
 
     // 4. Kirim pesan ke setiap channel
-    const channelIds = process.env.CHANNEL_IDS.split(",").map((id) =>
-      id.trim()
-    );
+    const channelIds = config.CHANNEL_IDS;
     if (channelIds.length === 0) {
       console.error(
         "Tidak ada ID channel yang ditemukan di variabel lingkungan CHANNEL_IDS."
@@ -170,11 +155,7 @@ async function sendCustomMessage() {
   } catch (error) {
     console.error("Terjadi kesalahan saat mengirim pesan kustom:", error);
   } finally {
-    // 5. Logout dari Discord
-    if (client.isReady()) {
-      client.destroy();
-      console.log("Bot telah logout dari Discord.");
-    }
+    // No client.destroy() here, as it's a singleton and should persist
   }
 }
 

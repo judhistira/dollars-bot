@@ -4,6 +4,10 @@ node_modules/
 # Environment variables
 .env
 
+# txt
+prompt.txt
+tulis.txt
+
 # Logs
 *.log
 

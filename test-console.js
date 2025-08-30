@@ -1,7 +1,7 @@
-require("dotenv").config();
-const { generateFinalMessage } = require("./gemini.js");
-const { getTimeInfo, splitMessageIntoChunks } = require("./utils.js");
-const { getGreetingMessage } = require("./bot.js");
+const { generateFinalMessage } = require("./src/gemini.js");
+const { getTimeInfo, splitMessageIntoChunks } = require("./src/utils.js");
+const { getGreetingMessage } = require("./src/message/greetingGenerator.js");
+const config = require("./src/config");
 
 /**
  * Test function to generate and display message in console
@@ -19,7 +19,7 @@ async function testConsoleOutput() {
     );
 
     // Get all message components
-    const greetingMessage = getGreetingMessage(timeInfo);
+    const greetingMessage = getGreetingMessage(timeInfo, config.LANGUAGE_STYLE);
     console.log(`Greeting: ${greetingMessage}\n`);
 
     // Generate final message
