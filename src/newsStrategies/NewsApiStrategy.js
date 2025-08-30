@@ -10,7 +10,7 @@ class NewsApiStrategy {
       }
 
       const response = await axios.get(
-        `https://newsapi.org/v2/everything?q=indonesia+government&pagenumber=1&pagesize=1&sortBy=publishedAt&apiKey=${NEWS_API_KEY}`
+        `https://newsapi.org/v2/everything?q=indonesia AND demonstrasi&language=id&pagenumber=1&pagesize=1&sortBy=relevancy&apiKey=${NEWS_API_KEY}`
       );
 
       if (response.data.articles && response.data.articles.length > 0) {

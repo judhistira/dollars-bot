@@ -11,12 +11,23 @@ const { convertToOldIndonesianSpelling } = require("./utils");
  */
 async function getGovernmentNews() {
   let newsStrategy;
+  let newsResult;
+
   if (config.NEWS_API_KEY) {
     newsStrategy = new NewsApiStrategy();
+    newsResult = await newsStrategy.getNews();
   } else {
     newsStrategy = new GeminiNewsStrategy();
+    newsResult = await newsStrategy.getNews();
   }
-  return newsStrategy.getNews();
+
+  // Ensure a non-null news result is always returned
+  if (!newsResult) {
+    console.error("News strategy returned null. Using generic fallback news.");
+    return "Berita terbaru: Gagal mendapatkan berita. Menggunakan berita fallback generik.";
+  }
+
+  return newsResult;
 }
 
 /**

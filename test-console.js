@@ -1,4 +1,4 @@
-const { generateFinalMessage } = require("./src/gemini.js");
+const { generateFinalMessage, getGovernmentNews } = require("./src/gemini.js");
 const { getTimeInfo, splitMessageIntoChunks } = require("./src/utils.js");
 const { getGreetingMessage } = require("./src/message/greetingGenerator.js");
 const config = require("./src/config");
@@ -22,9 +22,17 @@ async function testConsoleOutput() {
     const greetingMessage = getGreetingMessage(timeInfo, config.LANGUAGE_STYLE);
     console.log(`Greeting: ${greetingMessage}\n`);
 
+    // Get government news
+    const governmentNews = await getGovernmentNews();
+    console.log(`Government News: ${governmentNews}\n`);
+
     // Generate final message
     console.log("Menghasilkan pesan utama...\n");
-    const finalMessage = await generateFinalMessage(timeInfo, greetingMessage);
+    const finalMessage = await generateFinalMessage(
+      timeInfo,
+      greetingMessage,
+      governmentNews
+    );
 
     // Split message into chunks if it's too long
     const messageChunks = splitMessageIntoChunks(finalMessage);
