@@ -7,15 +7,37 @@ function getTimeInfo() {
     timeZone: process.env.TIMEZONE || "Asia/Jakarta",
     hour: "2-digit",
     hour12: false,
+    weekday: "long", // Add weekday option
   };
-  const hourInWIB = parseInt(
-    new Intl.DateTimeFormat("en-US", options).format(now)
-  );
 
-  const isWeekend = now.getDay() === 0 || now.getDay() === 6; // 0 = Sunday, 6 = Saturday
-  const dayName = new Intl.DateTimeFormat("id-ID", { weekday: "long" }).format(
-    now
-  );
+  const formatter = new Intl.DateTimeFormat("en-US", options);
+  const parts = formatter.formatToParts(now);
+
+  let hourInWIB;
+  let dayNameInWIB;
+
+  for (const part of parts) {
+    if (part.type === 'hour') {
+      hourInWIB = parseInt(part.value);
+    }
+    if (part.type === 'weekday') {
+      dayNameInWIB = part.value;
+    }
+  }
+
+  // Map day names to numbers for isWeekend calculation
+  const dayNameToNumber = {
+    "Sunday": 0,
+    "Monday": 1,
+    "Tuesday": 2,
+    "Wednesday": 3,
+    "Thursday": 4,
+    "Friday": 5,
+    "Saturday": 6,
+  };
+
+  const isWeekend = dayNameToNumber[dayNameInWIB] === 0 || dayNameToNumber[dayNameInWIB] === 6;
+  const dayName = new Intl.DateTimeFormat("id-ID", { weekday: "long", timeZone: process.env.TIMEZONE || "Asia/Jakarta" }).format(now);
 
   let timeOfDay;
   if (hourInWIB < 11) {

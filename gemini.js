@@ -86,7 +86,7 @@ async function generateFinalMessage(timeInfo, greetingMessage, governmentNews) {
       model: process.env.GEMINI_MODEL || "gemini-2.5-flash",
     });
 
-    const prompt = `Buat pesan dalam bentuk narasi yang mengalir dengan gaya karakter Rangga dari film \"Ada Apa Dengan Cinta\" - dingin, pendiam, puitis, introspektif, dan filosofis. Panjang pesan tidak lebih dari 1500 karakter.
+    const prompt = `Buat pesan dalam bentuk narasi yang mengalir dengan gaya karakter Rangga dari film \"Ada Apa Dengan Cinta\" - dingin, pendiam, puitis, introspektif, dan filosofis. Panjang pesan sekitar 1000-1500 karakter.
     
     <instruksi>
     Buat narasi yang padu dan berkesinambungan dengan struktur berikut:
@@ -142,7 +142,7 @@ async function generateFinalMessage(timeInfo, greetingMessage, governmentNews) {
     - Ucapan awal memiliki baris sendiri
     - Pisahkan setiap paragraf dengan satu baris kosong.
     - Pastikan format output tidak mengandung tag XML
-    - Panjang pesan tidak lebih dari 1500 karakter    
+    - Panjang pesan sekitar 1000-1500 karakter    
     - Gunakan emoji sangat minimal atau tidak sama sekali
     - Jangan membuat daftar atau poin-poin terpisah
     - Jadikan satu kesatuan narasi yang utuh dan padu

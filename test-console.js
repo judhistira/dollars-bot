@@ -13,7 +13,7 @@ async function testConsoleOutput() {
     // Get time information
     const timeInfo = getTimeInfo();
     console.log(
-      `Waktu saat ini: ${timeInfo.timeOfDay} (${
+      `Waktu saat ini: ${timeInfo.dayName} ${timeInfo.timeOfDay} (${
         timeInfo.isWeekend ? "Akhir Pekan" : "Hari Kerja"
       })\n`
     );
