@@ -2,7 +2,6 @@ const MorningGreetingStrategy = require("../strategies/MorningGreetingStrategy")
 const DaytimeGreetingStrategy = require("../strategies/DaytimeGreetingStrategy");
 const EveningGreetingStrategy = require("../strategies/EveningGreetingStrategy");
 const WeekendGreetingStrategy = require("../strategies/WeekendGreetingStrategy");
-const config = require("../config");
 
 /**
  * Generate greeting message based on time of day, day type, and language style

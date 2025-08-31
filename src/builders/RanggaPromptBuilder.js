@@ -165,7 +165,7 @@ class RanggaPromptBuilder {
 
     let introPrompt = ``;
     if (this.languageStyle === "poetic") {
-      introPrompt = `Buat pesan dalam bentuk narasi yang mengalir dengan gaya karakter Rangga dari film \"Ada Apa Dengan Cinta\" - dingin, pendiam, puitis, introspektif, dan filosofis. Panjang pesan sekitar 1000-1500 karakter.`;
+      introPrompt = `Buat pesan dalam bentuk narasi yang mengalir dengan gaya karakter Rangga dari film "Ada Apa Dengan Cinta" - dingin, pendiam, puitis, introspektif, dan filosofis. Panjang pesan sekitar 1000-1500 karakter.`;
     } else if (this.languageStyle === "sarcastic") {
       introPrompt = `Buat pesan dalam bentuk narasi yang mengalir dengan gaya sarkastis dan sinis. Panjang pesan sekitar 1000-1500 karakter.`;
     } else if (this.languageStyle === "motivational") {

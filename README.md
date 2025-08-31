@@ -12,7 +12,7 @@ Bot ini sudah aktif dan bisa kamu temui langsung di server **Dollars Indonesia**
 - **Gaya Bahasa Khas & Dinamis**: Setiap pesan dirangkai dengan gaya bahasa yang puitis, introspektif, dan terkadang sedikit sinis, khas karakter Rangga. Kini mendukung berbagai gaya bahasa dan tema pesan yang dapat dikonfigurasi melalui variabel lingkungan, termasuk gaya 'soe_hok_gie' yang memiliki sapaan uniknya sendiri.
 - **Konten Bervariasi**: Tidak hanya sapaan, bot juga menyajikan:
   - **Trivia Menarik**: Fakta-fakta unik untuk menambah wawasan.
-  - **Berita Terkini**: Informasi seputar pemerintah yang dibalut dengan komentar halus.
+  - **Berita Terkini**: Informasi seputar pemerintah, dengan prioritas pada isu-isu aktivisme dan demonstrasi, dibalut dengan komentar halus.
   - **Topik Diskusi**: Pertanyaan-pertanyaan acak untuk memancing obrolan di server.
 - **Penanganan Pesan Cerdas**: Pesan yang melebihi batas karakter Discord akan secara otomatis dipecah menjadi beberapa bagian agar tetap nyaman dibaca.
 - **Deployment Mudah**: Proyek ini telah dioptimalkan untuk proses deployment yang mudah dan gratis melalui Vercel.
@@ -53,7 +53,7 @@ Struktur direktori proyek kini lebih terorganisir:
 ├── test-console.js
 ├── test-reminder.js
 ├── send-custom-message.js
-└── vercel.json
+└── vercel.json             # Konfigurasi deployment Vercel (entry point di src/index.js)
 ```
 
 ## 🔧 Panduan Instalasi (Lokal)

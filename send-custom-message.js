@@ -6,7 +6,7 @@ const { splitMessageIntoChunks } = require("./src/utils.js");
 // --- KONFIGURASI ---
 // Isi prompt kustom Anda di sini.
 // Pesan yang dihasilkan akan dikirim ke CHANNEL_IDS yang ada di .env
-const customPrompt = `Buat pesan dalam bentuk narasi yang mengalir dengan gaya karakter Rangga dari film \"Ada Apa Dengan Cinta\" - dingin, penuh kemarahan, puitis, introspektif, dan filosofis mengenai kritikan pada pemerintah Indonesia. Panjang pesan sekitar 2000 karakter.
+const customPrompt = `Buat pesan dalam bentuk narasi yang mengalir dengan gaya karakter Rangga dari film "Ada Apa Dengan Cinta" - dingin, penuh kemarahan, puitis, introspektif, dan filosofis mengenai kritikan pada pemerintah Indonesia. Panjang pesan sekitar 2000 karakter.
     
     <instruksi>
     Buat narasi yang padu dan berkesinambungan dengan struktur berikut:

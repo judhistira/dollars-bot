@@ -17,7 +17,7 @@ Proyek ini kini memiliki struktur yang lebih modular dan terorganisir, mengadops
   - **`src/bot.js`**: Logika inti bot.
   - **`src/gemini.js`**: Mengelola interaksi dengan Google Gemini API.
   - **`src/utils.js`**: Kumpulan fungsi utilitas.
-- **`index.js`**: (Dipindahkan ke `src/index.js`) Entry point aplikasi. Menjalankan server Express dan menangani webhook.
+- **`src/index.js`**: Entry point aplikasi. Menjalankan server Express dan menangani webhook.
 - **`test-console.js`**: Skrip untuk tes output di konsol.
 - **`test-reminder.js`**: Skrip untuk tes pengiriman pesan ke Discord.
 - **`.env.example`**: Contoh file environment.
@@ -41,7 +41,7 @@ Proyek ini kini memanfaatkan pola desain modern untuk alur kerja yang lebih ters
 3.  `SendMessageCommand` (dari `src/commands/`) menjalankan logika utama:
     a.  Menggunakan `getTimeInfo` dari `src/utils.js` untuk menentukan waktu.
     b.  Memanggil `getGreetingMessage` (dari `src/message/greetingGenerator.js`) untuk membuat sapaan.
-    c.  Memanggil `getGovernmentNews` (dari `src/gemini.js`, yang menggunakan pola Strategy untuk sumber berita) untuk mendapatkan berita.
+    c.  Memanggil `getGovernmentNews` (dari `src/gemini.js`, yang menggunakan pola Strategy untuk sumber berita, dengan prioritas pada isu-isu aktivisme dan demonstrasi) untuk mendapatkan berita.
     d.  Memanggil `generateFinalMessage` (dari `src/gemini.js`, yang menggunakan pola Builder untuk prompt AI) untuk membuat konten pesan utama dengan AI, berdasarkan `MESSAGE_THEME` dan `LANGUAGE_STYLE` yang dikonfigurasi.
     e.  Menggunakan `splitMessageIntoChunks` (dari `src/utils.js`, yang menggunakan pola Chain of Responsibility) jika pesan terlalu panjang.
     f.  Mengirim pesan ke channel Discord.

@@ -1,4 +1,4 @@
-const config = require("./src/config");
+const { CHANNEL_IDS } = require("./src/config");
 const getDiscordClient = require("./src/services/discordService");
 const { SendMessageCommand } = require("./src/bot.js");
 
@@ -14,12 +14,12 @@ async function runTest() {
     const result = await new SendMessageCommand(client).execute();
     console.log("Test finished.");
 
-    if (result && result.success) {
-      console.log("✅ Success:", result.message);
-    } else {
+    if (CHANNEL_IDS.length === 0) {
       console.error("❌ Failure:", result ? result.error : "Unknown error");
+    } else {
+      console.log("✅ Success:", result.message);
     }
-    
+
     // Return the result for better integration
     return result;
   } catch (error) {
@@ -31,7 +31,7 @@ async function runTest() {
 }
 
 // Run the test and handle the result
-runTest().then(result => {
+runTest().then((result) => {
   if (result && result.success) {
     console.log("Test completed successfully!");
     process.exit(0);

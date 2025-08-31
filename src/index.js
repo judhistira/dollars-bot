@@ -28,36 +28,38 @@ app.all(WEBHOOK_PATH, async (req, res) => {
   try {
     client = await getDiscordClient();
 
-  try {
-    
+    try {
+      let result;
+      for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+        console.log(`Attempt ${attempt} to send message...`);
+        result = await new SendMessageCommand(client).execute();
+        if (result.success) {
+          console.log(`Message sent successfully on attempt ${attempt}.`);
+          break; // Exit loop on success
+        }
+        if (attempt < MAX_RETRIES) {
+          console.log(
+            `Attempt ${attempt} failed. Retrying in ${RETRY_DELAY / 1000}s...`
+          );
+          await delay(RETRY_DELAY);
+        } else {
+          console.log(`All ${MAX_RETRIES} attempts failed.`);
+        }
+      }
 
-    let result;
-    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
-      console.log(`Attempt ${attempt} to send message...`);
-      result = await new SendMessageCommand(client).execute();
-      if (result.success) {
-        console.log(`Message sent successfully on attempt ${attempt}.`);
-        break; // Exit loop on success
-      }
-      if (attempt < MAX_RETRIES) {
-        console.log(
-          `Attempt ${attempt} failed. Retrying in ${RETRY_DELAY / 1000}s...`
-        );
-        await delay(RETRY_DELAY);
-      } else {
-        console.log(`All ${MAX_RETRIES} attempts failed.`);
-      }
+      res.status(result.success ? 200 : 500).json(result);
+    } catch (error) {
+      console.error("An error occurred during the bot lifecycle:", error);
+      res.status(500).json({ success: false, error: error.message });
     }
-
-    res.status(result.success ? 200 : 500).json(result);
-  } catch (error) {
-    console.error("An error occurred during the bot lifecycle:", error);
-    res.status(500).json({ success: false, error: error.message });
-  } finally {
-    // No client.destroy() here, as it's a singleton and should persist
+  } catch (outerError) {
+    console.error(
+      "An error occurred while getting the Discord client:",
+      outerError
+    );
+    res.status(500).json({ success: false, error: outerError.message });
   }
 });
 
 // Export the app for Vercel
 module.exports = app;
-
