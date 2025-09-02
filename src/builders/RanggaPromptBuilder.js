@@ -165,13 +165,13 @@ class RanggaPromptBuilder {
 
     let introPrompt = ``;
     if (this.languageStyle === "poetic") {
-      introPrompt = `Buat pesan dalam bentuk narasi yang mengalir dengan gaya karakter Rangga dari film "Ada Apa Dengan Cinta" - dingin, pendiam, puitis, introspektif, dan filosofis. Panjang pesan sekitar 1000-1500 karakter.`;
+      introPrompt = `Buat pesan dalam bentuk narasi yang mengalir dengan gaya karakter Rangga dari film "Ada Apa Dengan Cinta" - dingin, pendiam, puitis, introspektif, dan filosofis. Panjang pesan tidak lebih dari 1000 karakter.`;
     } else if (this.languageStyle === "sarcastic") {
-      introPrompt = `Buat pesan dalam bentuk narasi yang mengalir dengan gaya sarkastis dan sinis. Panjang pesan sekitar 1000-1500 karakter.`;
+      introPrompt = `Buat pesan dalam bentuk narasi yang mengalir dengan gaya sarkastis dan sinis. Panjang pesan tidak lebih dari 1000 karakter.`;
     } else if (this.languageStyle === "motivational") {
-      introPrompt = `Buat pesan dalam bentuk narasi yang mengalir dengan gaya motivasi yang mendalam. Panjang pesan sekitar 1000-1500 karakter.`;
+      introPrompt = `Buat pesan dalam bentuk narasi yang mengalir dengan gaya motivasi yang mendalam. Panjang pesan tidak lebih dari 1000 karakter.`;
     } else if (this.languageStyle === "soe_hok_gie") {
-      introPrompt = `Buat pesan dalam bentuk narasi yang mengalir dengan gaya Soe Hok Gie, lugas, tajam, retoris, kritis, dan politis. Panjang pesan sekitar 1000-1500 karakter.`;
+      introPrompt = `Buat pesan dalam bentuk narasi yang mengalir dengan gaya Soe Hok Gie, lugas, tajam, retoris, kritis, dan politis. Panjang pesan tidak lebih dari 1000 karakter.`;
     }
 
     return `${introPrompt}
@@ -193,7 +193,7 @@ class RanggaPromptBuilder {
     - Ucapan awal memiliki baris sendiri
     - Pisahkan setiap paragraf dengan satu baris kosong.
     - Pastikan format output tidak mengandung tag XML
-    - Panjang pesan sekitar 1000-1500 karakter    
+    - Panjang pesan tidak lebih dari 1000 karakter    
     - Gunakan emoji sangat minimal atau tidak sama sekali
     - Jangan membuat daftar atau poin-poin terpisah
     - Jadikan satu kesatuan narasi yang utuh dan padu
